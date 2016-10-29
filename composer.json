@@ -1,0 +1,22 @@
+{
+  "name": "bc/php-rest",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "inpu",
+      "email": "theinpu@gmail.com",
+      "homepage": "https://github.com/theinpu"
+    }
+  ],
+  "require": {
+    "slim/slim": "3.5.*"
+  },
+  "require-dev": {
+    "codeception/codeception": "2.2.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "bc\\rest\\" : "./src/bc/rest/"
+    }
+  }
+}
