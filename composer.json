@@ -9,7 +9,9 @@
     }
   ],
   "require": {
-    "slim/slim": "3.5.*"
+    "symfony/console": "3.1.*",
+    "gossi/swagger": "~0",
+    "gossi/php-code-generator": "~0"
   },
   "require-dev": {
     "codeception/codeception": "2.2.*"
@@ -18,5 +20,8 @@
     "psr-4": {
       "bc\\rest\\" : "./src/bc/rest/"
     }
-  }
+  },
+  "bin": [
+    "bin/apigen"
+  ]
 }
