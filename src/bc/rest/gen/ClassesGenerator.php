@@ -119,13 +119,14 @@ class ClassesGenerator {
             $body = [];
 
             $subBody = [];
+            $subBody[] = '/** @var App $this */';
             foreach($info as $item) {
                 /** @var Path $currentPath */
                 $currentPath = $item['path'];
                 /** @var Operation $op */
                 $op = $item['operation'];
                 $p = str_replace('/'.$group, '', $currentPath->getPath());
-                $subBody[] = '$this->app->'.strtolower($item['method'])
+                $subBody[] = '$this->'.strtolower($item['method'])
                              .'(\''.$p.'\', \'\\'.$controller->getQualifiedName().':'.$op->getOperationId().'\');';
             }
             $f = PhpFunction::create()->setBody(implode("\n", $subBody));
