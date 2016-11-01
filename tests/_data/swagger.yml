@@ -1,0 +1,137 @@
+swagger: "2.0"
+info:
+  description: Example Api
+  title: ExampleApi
+  version: 1.0.0
+consumes:
+  - application/json
+produces:
+  - application/json
+tags:
+  - name: items
+    description: Items API
+definitions:
+  Item:
+    type: object
+    description: simple item
+    required:
+      - content
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+      content:
+        type: string
+      flag:
+        type: boolean
+        default: true
+  Error:
+    type: object
+    description: error message
+    required:
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      exception:
+        type: string
+paths:
+  /item:
+      post:
+        summary: add new item
+        operationId: addItem
+        tags:
+          - items
+        parameters:
+          - name: body
+            in: body
+            schema:
+              $ref: '#/definitions/Item'
+        responses:
+          201:
+            description: Created
+            schema:
+              $ref: '#/definitions/Item'
+          400:
+            description: invalid object
+            schema:
+              $ref: '#/definitions/Error'
+          default:
+            description: generic error
+            schema:
+              $ref: '#/definitions/Error'
+  /item/{id}:
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        format: int64
+        required: true
+    get:
+      summary: get item by id
+      operationId: getItem
+      tags:
+        - items
+      responses:
+        200:
+          description: item with specific id
+          schema:
+            $ref: '#/definitions/Item'
+        404:
+          description: item not found
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: generic error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      summary: update item
+      operationId: updateItem
+      tags:
+        - items
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/Item'
+      responses:
+        200:
+          description: Ok
+          schema:
+            $ref: '#/definitions/Item'
+        400:
+          description: invalid object
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: item not found
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: generic error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: delete item
+      operationId: deleteItem
+      tags:
+        - items
+      responses:
+        204:
+          description: Deleted
+        404:
+          description: item not found
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: generic error
+          schema:
+            $ref: '#/definitions/Error'
+schemes:
+  - http
+  - https

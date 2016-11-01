@@ -1,0 +1,6 @@
+class_name: GeneratorTester
+modules:
+    enabled:
+        - \Helper\Generator
+        - Cli
+        - Filesystem
