@@ -2,7 +2,8 @@
 
 namespace bc\rest\commands;
 
-use bc\rest\gen\Generator;
+use bc\rest\gen\ClassesGenerator;
+use gossi\codegen\generator\CodeGenerator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
@@ -30,12 +31,46 @@ class GenerateAll extends Command {
         if(!file_exists($outputPath) || !is_dir($outputPath)) {
             throw new InvalidArgumentException(sprintf('Output path not found: %s', $outputPath));
         }
-        
+
         $ns = $input->getOption('namespace');
 
-        $gen = new Generator($swaggerFile, $ns);
+        $classes = new ClassesGenerator($swaggerFile, $ns);
+
+        $gen = new CodeGenerator(['generateEmptyDocblock' => false]);
+
+        $bootstrapPath = rtrim($outputPath, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR
+                         .str_replace('\\', DIRECTORY_SEPARATOR, $classes->getBootstrap()->getNamespace());
+
+        if(!file_exists($bootstrapPath)) {
+            mkdir($bootstrapPath, 0664, true);
+        }
+
+        file_put_contents($bootstrapPath.DIRECTORY_SEPARATOR.$classes->getBootstrap()->getName().'.php',
+                          "<?php\n\n".$gen->generate($classes->getBootstrap()));
+        $output->writeln("Bootstrap created");
+
+        foreach($classes->getModels() as $model) {
+            $path = rtrim($outputPath, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR
+                    .str_replace('\\', DIRECTORY_SEPARATOR, $model->getNamespace());
+            if(!file_exists($path)) {
+                mkdir($path, 0664, true);
+            }
+            file_put_contents($path.DIRECTORY_SEPARATOR.$model->getName().'.php',
+                              "<?php\n\n".$gen->generate($model));
+            $output->writeln('Model '.$model->getName()." created");
+        }
         
-        $gen->getPaths();
+        foreach($classes->getControllers() as $controller) {
+            $path = rtrim($outputPath, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR
+                    .str_replace('\\', DIRECTORY_SEPARATOR, $controller->getNamespace());
+            if(!file_exists($path)) {
+                mkdir($path, 0664, true);
+            }
+            file_put_contents($path.DIRECTORY_SEPARATOR.$controller->getName().'.php',
+                              "<?php\n\n".$gen->generate($controller));
+            $output->writeln($controller->getName()." created");
+        }
+        
     }
 
 }

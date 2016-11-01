@@ -11,7 +11,7 @@ tags:
   - name: items
     description: Items API
 definitions:
-  item:
+  Item:
     type: object
     description: simple item
     required:
@@ -26,7 +26,7 @@ definitions:
       flag:
         type: boolean
         default: true
-  error:
+  Error:
     type: object
     description: error message
     required:
@@ -50,20 +50,20 @@ paths:
           - name: body
             in: body
             schema:
-              $ref: '#/definitions/item'
+              $ref: '#/definitions/Item'
         responses:
           201:
             description: Created
             schema:
-              $ref: '#/definitions/item'
+              $ref: '#/definitions/Item'
           400:
             description: invalid object
             schema:
-              $ref: '#/definitions/error'
+              $ref: '#/definitions/Error'
           default:
             description: generic error
             schema:
-              $ref: '#/definitions/error'
+              $ref: '#/definitions/Error'
   /item/{id}:
     parameters:
       - name: id
@@ -80,15 +80,15 @@ paths:
         200:
           description: item with specific id
           schema:
-            $ref: '#/definitions/item'
+            $ref: '#/definitions/Item'
         404:
           description: item not found
           schema:
-            $ref: '#/definitions/error'
+            $ref: '#/definitions/Error'
         default:
           description: generic error
           schema:
-            $ref: '#/definitions/error'
+            $ref: '#/definitions/Error'
     put:
       summary: update item
       operationId: updateItem
@@ -98,24 +98,24 @@ paths:
         - name: body
           in: body
           schema:
-            $ref: '#/definitions/item'
+            $ref: '#/definitions/Item'
       responses:
         200:
           description: Ok
           schema:
-            $ref: '#/definitions/item'
+            $ref: '#/definitions/Item'
         400:
           description: invalid object
           schema:
-            $ref: '#/definitions/error'
+            $ref: '#/definitions/Error'
         404:
           description: item not found
           schema:
-            $ref: '#/definitions/error'
+            $ref: '#/definitions/Error'
         default:
           description: generic error
           schema:
-            $ref: '#/definitions/error'
+            $ref: '#/definitions/Error'
     delete:
       summary: delete item
       operationId: deleteItem
@@ -127,11 +127,11 @@ paths:
         404:
           description: item not found
           schema:
-            $ref: '#/definitions/error'
+            $ref: '#/definitions/Error'
         default:
           description: generic error
           schema:
-            $ref: '#/definitions/error'
+            $ref: '#/definitions/Error'
 schemes:
   - http
   - https
