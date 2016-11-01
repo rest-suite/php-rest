@@ -12,6 +12,7 @@ use gossi\docblock\Docblock;
 use gossi\docblock\tags\ParamTag;
 use gossi\docblock\tags\ReturnTag;
 use gossi\docblock\tags\TagFactory;
+use gossi\swagger\collections\Parameters;
 use gossi\swagger\Operation;
 use gossi\swagger\Parameter;
 use gossi\swagger\Path;
@@ -35,7 +36,7 @@ class ClassesGenerator {
      */
     private $models;
     /**
-     * @var PhpClass[]
+     * @var ControllerGenerator
      */
     private $controllers;
     private $groups;
@@ -57,7 +58,8 @@ class ClassesGenerator {
         $this->namespace = rtrim($namespace, '\\');
         $this->createModels();
         $this->createPathGroups();
-        $this->createControllers();
+        $this->controllers = new ControllerGenerator($this->swagger, $this->namespace, $this->groups);
+
         $this->createBootstrap();
     }
 
@@ -180,115 +182,6 @@ class ClassesGenerator {
         }
     }
 
-    private function createControllers() {
-
-        /** @var PhpClass[] $controllers */
-        $controllers = [];
-        foreach($this->groups as $group => $info) {
-            $name = ucfirst(strtolower($group)).'Controller';
-            if(!isset($controllers[$name])) {
-                $path = rtrim($this->swagger->getBasePath(), '/').'/'.$group;
-                $controllers[$name] = new PhpClass($name);
-                $controllers[$name]
-                    ->setNamespace($this->namespace.'\\Controllers')
-                    ->setUseStatements(
-                        [
-                            'Slim\\Container',
-                            'Psr\\Http\\Message\\ServerRequestInterface',
-                            'Psr\\Http\\Message\\ResponseInterface'
-                        ])
-                    ->setDocblock(
-                        Docblock::create()
-                                ->appendTag(TagFactory::create('package', $controllers[$name]->getNamespace())))
-                    ->setDescription('Class '.$name)
-                    ->setLongDescription('Handle '.$path)
-                    ->setProperties(
-                        [
-                            PhpProperty::create('ci')
-                                       ->setType('Container')
-                                       ->setDescription('Dependency injection container')
-                                       ->setVisibility('private')
-                        ])
-                    ->setMethod(
-                        PhpMethod::create('__construct')
-                                 ->addParameter(
-                                     PhpParameter::create('ci')->setType('Container'))
-                                 ->setBody('$this->ci = $ci;'));
-            }
-
-            foreach($info as $item) {
-                /** @var Operation $op */
-                $op = $item['operation'];
-                /** @var Path $path */
-                $path = $item['path'];
-                if(!empty($op->getOperationId())) {
-                    $method = PhpMethod::create($op->getOperationId());
-
-                    $doc = Docblock::create()
-                                   ->appendTag(ParamTag::create()->setVariable('request')->setType('ServerRequestInterface'))
-                                   ->appendTag(ParamTag::create()->setVariable('response')->setType('ResponseInterface'))
-                                   ->appendTag(ParamTag::create()->setVariable('args')->setType('array'))
-                                   ->appendTag(ReturnTag::create()->setType('ResponseInterface'));
-
-                    $params = $path->getParameters();
-                    if($params->size() > 0) {
-                        /** @var Parameter $param */
-                        foreach($params as $param) {
-                            if($param->getIn() == 'body') continue;
-                            $doc->appendTag(
-                                TagFactory::create('internal',
-                                                   $param->getType()
-                                                   .' $'.$param->getName()
-                                                   .' '.$param->getDescription()));
-                        }
-                    }
-                    $params = $op->getParameters();
-                    if($params->size() > 0) {
-                        /** @var Parameter $param */
-                        foreach($params as $param) {
-                            if($param->getIn() == 'body') continue;
-                            $doc->appendTag(
-                                TagFactory::create('internal',
-                                                   $param->getType()
-                                                   .' $'.$param->getName()
-                                                   .' '.$param->getDescription()));
-                        }
-                    }
-
-                    $doc->appendTag(TagFactory::create('api', strtoupper($item['method']).' '.$path->getPath()));
-
-                    $responses = $op->getResponses();
-
-                    /**
-                     * @var string $r
-                     * @var Response $response
-                     */
-                    foreach($responses as $r => $response) {
-                        $doc->appendTag(
-                            TagFactory::create('api-response:'.$r,
-                                               $response->getSchema()->getRef().' '.$response->getDescription()));
-                    }
-
-                    $method->setDocblock($doc)
-                           ->setDescription($op->getSummary())
-                           ->setLongDescription($op->getDescription());
-
-                    $method->addParameter(PhpParameter::create('request')->setType('ServerRequestInterface'));
-                    $method->addParameter(PhpParameter::create('response')->setType('ResponseInterface'));
-                    $method->addParameter(PhpParameter::create('args')->setType('array'));
-
-                    $body = ['return $response;'];
-
-                    $method->setBody(implode("\n", $body));
-
-                    $controllers[$name]->setMethod($method);
-                }
-            }
-        }
-
-        $this->controllers = $controllers;
-    }
-
     private function createBootstrap() {
         $gen = new CodeGenerator(['generateEmptyDocblock' => false]);
         $bootstrap = new PhpClass('Bootstrap');
@@ -308,7 +201,7 @@ class ClassesGenerator {
         $routes = ['$this->app = new App();'];
         foreach($this->groups as $group => $info) {
             $ctrl = ucfirst(strtolower($group)).'Controller';
-            $controller = $this->controllers[$ctrl];
+            $controller = $this->controllers->get($ctrl);
             $routeMethod = PhpMethod::create('routeTo'.$controller->getName());
             $path = rtrim($this->swagger->getBasePath(), '/').'/'.$group;
             $routeMethod
@@ -346,11 +239,28 @@ class ClassesGenerator {
         $this->bootstrap = $bootstrap;
     }
 
+    public static function getType($type) {
+        switch($type) {
+            case Swagger::T_INTEGER:
+                return 'int';
+            case Swagger::T_NUMBER:
+                return 'int';
+            case Swagger::T_BOOLEAN:
+                return 'bool';
+            case Swagger::T_STRING:
+                return 'string';
+            case 'array':
+                return 'array';
+            default:
+                return '';
+        }
+    }
+
     /**
      * @return \gossi\codegen\model\PhpClass[]
      */
     public function getControllers() {
-        return $this->controllers;
+        return $this->controllers->getAll();
     }
 
     /**
