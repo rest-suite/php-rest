@@ -80,6 +80,7 @@ class ControllerGenerator {
                         PhpMethod::create('__construct')
                                  ->addParameter(
                                      PhpParameter::create('ci')->setType('Container'))
+                                 ->setDescription($controllers[$name]->getName().' constructor')
                                  ->setBody('$this->ci = $ci;'));
             }
 
@@ -122,7 +123,7 @@ class ControllerGenerator {
                         if($this->swagger->getDefinitions()->has($refName)) {
                             $doc->appendTag(
                                 TagFactory::create('api-response:'.$r,
-                                                   $this->namespace.'\\Models\\'.$refName.' '.$response->getDescription()));
+                                                   $this->namespace.'\\ApiModels\\'.$refName.' '.$response->getDescription()));
                         }
                         else {
                             $doc->appendTag(
@@ -177,7 +178,7 @@ class ControllerGenerator {
                                 $r['param'] = $param;
                                 $r['tag'] = TagFactory::create('internal', $model);
                                 $r['body'] = '$'.lcfirst($refName).' = new '.$refName.'($request->getParsedBody());';
-                                $r['usage'] = $this->namespace.'\\Models\\'.$refName;
+                                $r['usage'] = $this->namespace.'\\ApiModels\\'.$refName;
                                 $result[$name] = $r;
                             }
                         }

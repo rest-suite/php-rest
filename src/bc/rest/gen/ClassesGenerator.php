@@ -32,7 +32,7 @@ class ClassesGenerator {
      */
     private $namespace;
     /**
-     * @var PhpClass[]
+     * @var ModelGenerator
      */
     private $models;
     /**
@@ -56,103 +56,12 @@ class ClassesGenerator {
         $swagger = Yaml::parse($yml);
         $this->swagger = new Swagger($swagger);
         $this->namespace = rtrim($namespace, '\\');
-        $this->createModels();
+        //$this->createModels();
+        $this->models = new ModelGenerator($this->swagger, $this->namespace);
         $this->createPathGroups();
         $this->controllers = new ControllerGenerator($this->swagger, $this->namespace, $this->groups);
 
         $this->createBootstrap();
-    }
-
-    private function createModels() {
-        $this->models = [];
-
-        $defs = $this->swagger->getDefinitions();
-        /** @var Schema $def */
-        foreach($defs as $name => $def) {
-            if(isset($this->models[$name])) continue;
-            if($def->getType() != 'object') continue;
-            $ns = $this->namespace.'\\Models';
-            $model = new PhpClass($name);
-            $model
-                ->setNamespace($ns)
-                ->setLongDescription($def->getDescription())
-                ->setDescription('Class '.$name)
-                ->setDocblock(Docblock::create()->appendTag(TagFactory::create('package', $ns)));
-
-            $this->models[$name] = $model;
-        }
-
-        foreach($defs as $name => $def) {
-            if(!isset($this->models[$name])) continue;
-            $model = $this->models[$name];
-            /** @var Schema $property */
-            foreach($def->getProperties() as $param => $property) {
-                $prop = PhpProperty::create($param)
-                                   ->setVisibility('private')
-                                   ->setDescription($property->getDescription());
-
-                switch($property->getType()) {
-                    case 'integer':
-                        $prop->setType('int');
-                        break;
-                    case 'boolean':
-                        $prop->setType('bool');
-                        break;
-                    case 'array':
-                        if($property->getItems()->hasRef()) {
-                            $ref = explode('/', $property->getItems()->getRef());
-                            $n = $ref[count($ref) - 1];
-                            if($this->models[$n]->getNamespace() != $model->getNamespace()) {
-                                $model->addUseStatement($this->models[$n]->getQualifiedName());
-                            }
-                            $prop->setType($this->models[$n]->getName().'[]');
-                        }
-                        else {
-                            $prop->setType('array');
-                        }
-                        break;
-                    default:
-                        if($property->hasRef()) {
-                            $ref = explode('/', $property->getRef());
-                            $n = $ref[count($ref) - 1];
-                            if(isset($this->models[$n])) {
-                                if($this->models[$n]->getNamespace() != $model->getNamespace()) {
-                                    $model->addUseStatement($this->models[$n]->getQualifiedName());
-                                }
-                                $prop->setType($this->models[$n]->getName());
-                            }
-                        }
-                        else {
-                            $prop->setType($property->getType());
-                        }
-                        break;
-                }
-
-                $getter = PhpMethod::create('get'.ucfirst($param));
-                $getter->setDocblock(
-                    Docblock::create()->appendTag(
-                        ReturnTag::create($prop->getType())
-                    )
-                )
-                       ->setDescription('Get '.$param.' property value')
-                       ->setBody('return $this->'.$param.';');
-                $model->setMethod($getter);
-
-                if(!$property->isReadOnly()) {
-                    $setter = PhpMethod::create('set'.ucfirst($param))
-                                       ->setDescription('Set '.$param.' property new value');
-                    $parameter = PhpParameter::create($param);
-                    if(strpos($prop->getType(), '[]') === false) {
-                        $parameter->setType($prop->getType());
-                    }
-                    $setter->addParameter($parameter);
-                    $setter->setBody('$this->'.$param.' = $'.$param.';');
-                    $model->setMethod($setter);
-                }
-
-                $model->setProperty($prop);
-            }
-        }
     }
 
     private function createPathGroups() {
@@ -274,6 +183,6 @@ class ClassesGenerator {
      * @return \gossi\codegen\model\PhpClass[]
      */
     public function getModels() {
-        return $this->models;
+        return $this->models->getAll();
     }
 }
