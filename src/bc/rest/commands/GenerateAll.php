@@ -41,8 +41,10 @@ class GenerateAll extends Command {
         $bootstrapPath = rtrim($outputPath, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR
                          .str_replace('\\', DIRECTORY_SEPARATOR, $classes->getBootstrap()->getNamespace());
 
+        $oldumask = umask(0);
+
         if(!file_exists($bootstrapPath)) {
-            mkdir($bootstrapPath, 0664, true);
+            mkdir($bootstrapPath, 0755, true);
         }
 
         file_put_contents($bootstrapPath.DIRECTORY_SEPARATOR.$classes->getBootstrap()->getName().'.php',
@@ -53,7 +55,7 @@ class GenerateAll extends Command {
             $path = rtrim($outputPath, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR
                     .str_replace('\\', DIRECTORY_SEPARATOR, $model->getNamespace());
             if(!file_exists($path)) {
-                mkdir($path, 0664, true);
+                mkdir($path, 0755, true);
             }
             file_put_contents($path.DIRECTORY_SEPARATOR.$model->getName().'.php',
                               "<?php\n\n".$gen->generate($model));
@@ -64,12 +66,14 @@ class GenerateAll extends Command {
             $path = rtrim($outputPath, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR
                     .str_replace('\\', DIRECTORY_SEPARATOR, $controller->getNamespace());
             if(!file_exists($path)) {
-                mkdir($path, 0664, true);
+                mkdir($path, 0755, true);
             }
             file_put_contents($path.DIRECTORY_SEPARATOR.$controller->getName().'.php',
                               "<?php\n\n".$gen->generate($controller));
             $output->writeln($controller->getName()." created");
         }
+
+        umask($oldumask);
         
     }
 
