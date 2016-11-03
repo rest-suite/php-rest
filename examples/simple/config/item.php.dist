@@ -1,0 +1,8 @@
+<?php 
+
+ return array (
+  'addItem' => true,
+  'getItem' => true,
+  'updateItem' => true,
+  'deleteItem' => true,
+);
