@@ -1,0 +1,11 @@
+<?php 
+
+ return array (
+  'ItemController' => 
+  array (
+    'addItem' => true,
+    'getItem' => true,
+    'updateItem' => true,
+    'deleteItem' => true,
+  ),
+);

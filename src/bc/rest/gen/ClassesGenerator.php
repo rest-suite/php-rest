@@ -136,7 +136,7 @@ class ClassesGenerator {
             }
             $subBody[] = '}';
             
-            $this->configs[$group] = $defaultConfig;
+            $this->configs[$ctrl] = $defaultConfig;
 
             $body[] = '$settings = $this->app->getContainer()->get(\'settings\');';
             $body[] = '$apiConfig = '.var_export($defaultConfig, true).';';

@@ -62,7 +62,7 @@ class GenerateAll extends Command {
                               "<?php\n\n".$gen->generate($model));
             $output->writeln('Model '.$model->getName()." created");
         }
-        
+
         foreach($classes->getControllers() as $controller) {
             $path = $outputPath.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR
                     .str_replace('\\', DIRECTORY_SEPARATOR, $controller->getNamespace());
@@ -78,16 +78,14 @@ class GenerateAll extends Command {
         if(!file_exists($configPath)) {
             mkdir($configPath, 0755, true);
         }
-        
+
         $configs = $classes->getConfigs();
-        foreach($configs as $name => $config) {
-            $fileName = $configPath.DIRECTORY_SEPARATOR.$name.'.php.dist';
-            file_put_contents($fileName, "<?php \n\n return ".var_export($config, true).';');
-            $output->writeln("Config '{$name}' created");
-        }
-        
+        $fileName = $configPath.DIRECTORY_SEPARATOR.'api.php.dist';
+        file_put_contents($fileName, "<?php \n\n return ".var_export($configs, true).';');
+        $output->writeln("Config created");
+
         umask($oldumask);
-        
+
     }
 
 }

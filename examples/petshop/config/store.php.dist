@@ -1,8 +1,0 @@
-<?php 
-
- return array (
-  'getInventory' => true,
-  'placeOrder' => true,
-  'getOrderById' => true,
-  'deleteOrder' => true,
-);
