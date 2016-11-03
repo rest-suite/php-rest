@@ -31,6 +31,7 @@ class GenerateAll extends Command {
         if(!file_exists($outputPath) || !is_dir($outputPath)) {
             throw new InvalidArgumentException(sprintf('Output path not found: %s', $outputPath));
         }
+        $outputPath = rtrim($outputPath, DIRECTORY_SEPARATOR);
 
         $ns = $input->getOption('namespace');
 
@@ -38,7 +39,7 @@ class GenerateAll extends Command {
 
         $gen = new CodeGenerator(['generateEmptyDocblock' => false]);
 
-        $bootstrapPath = rtrim($outputPath, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR
+        $bootstrapPath = $outputPath.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR
                          .str_replace('\\', DIRECTORY_SEPARATOR, $classes->getBootstrap()->getNamespace());
 
         $oldumask = umask(0);
@@ -52,7 +53,7 @@ class GenerateAll extends Command {
         $output->writeln("Bootstrap created");
 
         foreach($classes->getModels() as $model) {
-            $path = rtrim($outputPath, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR
+            $path = $outputPath.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR
                     .str_replace('\\', DIRECTORY_SEPARATOR, $model->getNamespace());
             if(!file_exists($path)) {
                 mkdir($path, 0755, true);
@@ -63,7 +64,7 @@ class GenerateAll extends Command {
         }
         
         foreach($classes->getControllers() as $controller) {
-            $path = rtrim($outputPath, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR
+            $path = $outputPath.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR
                     .str_replace('\\', DIRECTORY_SEPARATOR, $controller->getNamespace());
             if(!file_exists($path)) {
                 mkdir($path, 0755, true);
@@ -73,6 +74,18 @@ class GenerateAll extends Command {
             $output->writeln($controller->getName()." created");
         }
 
+        $configPath = $outputPath.DIRECTORY_SEPARATOR.'config';
+        if(!file_exists($configPath)) {
+            mkdir($configPath, 0755, true);
+        }
+        
+        $configs = $classes->getConfigs();
+        foreach($configs as $name => $config) {
+            $fileName = $configPath.DIRECTORY_SEPARATOR.$name.'.php.dist';
+            file_put_contents($fileName, "<?php \n\n return ".var_export($config, true).';');
+            $output->writeln("Config '{$name}' created");
+        }
+        
         umask($oldumask);
         
     }

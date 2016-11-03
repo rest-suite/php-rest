@@ -1,0 +1,12 @@
+<?php
+
+return array(
+    'addPet'            => true,
+    'updatePet'         => true,
+    'findPetsByStatus'  => true,
+    'findPetsByTags'    => true,
+    'getPetById'        => true,
+    'updatePetWithForm' => true,
+    'deletePet'         => true,
+    'uploadFile'        => true,
+);

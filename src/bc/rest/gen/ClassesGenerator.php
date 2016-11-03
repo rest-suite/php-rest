@@ -2,9 +2,7 @@
 
 namespace bc\rest\gen;
 
-use gossi\codegen\generator\CodeGenerator;
 use gossi\codegen\model\PhpClass;
-use gossi\codegen\model\PhpFunction;
 use gossi\codegen\model\PhpMethod;
 use gossi\codegen\model\PhpParameter;
 use gossi\codegen\model\PhpProperty;
@@ -33,7 +31,14 @@ class ClassesGenerator {
      * @var ControllerGenerator
      */
     private $controllers;
+    /**
+     * @var array
+     */
     private $groups;
+    /**
+     * @var array
+     */
+    private $configs;
     /**
      * @var PhpClass
      */
@@ -50,11 +55,10 @@ class ClassesGenerator {
         $swagger = Yaml::parse($yml);
         $this->swagger = new Swagger($swagger);
         $this->namespace = rtrim($namespace, '\\');
-        //$this->createModels();
         $this->models = new ModelGenerator($this->swagger, $this->namespace);
+        $this->configs = [];
         $this->createPathGroups();
         $this->controllers = new ControllerGenerator($this->swagger, $this->namespace, $this->groups);
-
         $this->createBootstrap();
     }
 
@@ -86,7 +90,6 @@ class ClassesGenerator {
     }
 
     private function createBootstrap() {
-        $gen = new CodeGenerator(['generateEmptyDocblock' => false]);
         $bootstrap = new PhpClass('Bootstrap');
         $bootstrap
             ->setNamespace($this->namespace)
@@ -102,7 +105,9 @@ class ClassesGenerator {
         $construct = PhpMethod::create('__construct')->setDescription('Bootstrap constructor');
         $construct->addParameter(PhpParameter::create('app')->setType('App')->setValue(null));
 
-        $routes = ['$this->app = is_null($app) ? new App() : $app;'];
+        $routes = [];
+        $routes[] = '$this->app = is_null($app) ? new App() : $app;';
+
         foreach($this->groups as $group => $info) {
             $ctrl = ucfirst(strtolower($group)).'Controller';
             $controller = $this->controllers->get($ctrl);
@@ -113,20 +118,32 @@ class ClassesGenerator {
                 ->setDescription('Route to '.$path.' api group');
             $body = [];
 
+            $defaultConfig = [];
+
             $subBody = [];
-            $subBody[] = '/** @var App $this */';
+            $subBody[] = 'function () use($apiConfig) {';
+            $subBody[] = "\t/** @var App \$this */";
             foreach($info as $item) {
                 /** @var Path $currentPath */
                 $currentPath = $item['path'];
                 /** @var Operation $op */
                 $op = $item['operation'];
                 $p = str_replace('/'.$group, '', $currentPath->getPath());
-                $subBody[] = '$this->'.strtolower($item['method'])
+                $subBody[] = "\t".'if($apiConfig[\''.$op->getOperationId().'\'])'
+                             ."\n\t\t".'$this->'.strtolower($item['method'])
                              .'(\''.$p.'\', \'\\'.$controller->getQualifiedName().':'.$op->getOperationId().'\');';
+                $defaultConfig[$op->getOperationId()] = true;
             }
-            $f = PhpFunction::create()->setBody(implode("\n", $subBody));
+            $subBody[] = '}';
+            
+            $this->configs[$group] = $defaultConfig;
 
-            $body[] = '$this->app->group(\''.$path.'\', '.$gen->generate($f).');';
+            $body[] = '$settings = $this->app->getContainer()->get(\'settings\');';
+            $body[] = '$apiConfig = '.var_export($defaultConfig, true).';';
+            $body[] = 'if(isset($settings[\'api\']) && isset($settings[\'api\'][\''.$ctrl.'\'])) { ';
+            $body[] = "\t".'$apiConfig = array_merge($apiConfig, $settings[\'api\'][\''.$ctrl.'\']);';
+            $body[] = '}';
+            $body[] = '$this->app->group(\''.$path.'\', '.implode("\n", $subBody).');';
 
             $routeMethod->setBody(implode("\n", $body));
 
@@ -180,5 +197,12 @@ class ClassesGenerator {
      */
     public function getModels() {
         return $this->models->getAll();
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfigs() { 
+        return $this->configs;
     }
 }

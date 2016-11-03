@@ -1,0 +1,12 @@
+<?php 
+
+ return array (
+  'createUser' => true,
+  'createUsersWithArrayInput' => true,
+  'createUsersWithListInput' => true,
+  'loginUser' => true,
+  'logoutUser' => true,
+  'getUserByName' => true,
+  'updateUser' => true,
+  'deleteUser' => true,
+);

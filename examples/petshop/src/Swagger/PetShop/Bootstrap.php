@@ -43,16 +43,38 @@ class Bootstrap {
 	 * Route to /v2/pet api group
 	 */
 	private function routeToPetController() {
-		$this->app->group('/v2/pet', function () {
+		$settings = $this->app->getContainer()->get('settings');
+		$apiConfig = array (
+		  'addPet' => true,
+		  'updatePet' => true,
+		  'findPetsByStatus' => true,
+		  'findPetsByTags' => true,
+		  'getPetById' => true,
+		  'updatePetWithForm' => true,
+		  'deletePet' => true,
+		  'uploadFile' => true,
+		);
+		if(isset($settings['api']) && isset($settings['api']['PetController'])) { 
+			$apiConfig = array_merge($apiConfig, $settings['api']['PetController']);
+		}
+		$this->app->group('/v2/pet', function () use($apiConfig) {
 			/** @var App $this */
-			$this->post('', '\Swagger\PetShop\Controllers\PetController:addPet');
-			$this->put('', '\Swagger\PetShop\Controllers\PetController:updatePet');
-			$this->get('/findByStatus', '\Swagger\PetShop\Controllers\PetController:findPetsByStatus');
-			$this->get('/findByTags', '\Swagger\PetShop\Controllers\PetController:findPetsByTags');
-			$this->get('/{petId}', '\Swagger\PetShop\Controllers\PetController:getPetById');
-			$this->post('/{petId}', '\Swagger\PetShop\Controllers\PetController:updatePetWithForm');
-			$this->delete('/{petId}', '\Swagger\PetShop\Controllers\PetController:deletePet');
-			$this->post('/{petId}/uploadImage', '\Swagger\PetShop\Controllers\PetController:uploadFile');
+			if($apiConfig['addPet'])
+				$this->post('', '\Swagger\PetShop\Controllers\PetController:addPet');
+			if($apiConfig['updatePet'])
+				$this->put('', '\Swagger\PetShop\Controllers\PetController:updatePet');
+			if($apiConfig['findPetsByStatus'])
+				$this->get('/findByStatus', '\Swagger\PetShop\Controllers\PetController:findPetsByStatus');
+			if($apiConfig['findPetsByTags'])
+				$this->get('/findByTags', '\Swagger\PetShop\Controllers\PetController:findPetsByTags');
+			if($apiConfig['getPetById'])
+				$this->get('/{petId}', '\Swagger\PetShop\Controllers\PetController:getPetById');
+			if($apiConfig['updatePetWithForm'])
+				$this->post('/{petId}', '\Swagger\PetShop\Controllers\PetController:updatePetWithForm');
+			if($apiConfig['deletePet'])
+				$this->delete('/{petId}', '\Swagger\PetShop\Controllers\PetController:deletePet');
+			if($apiConfig['uploadFile'])
+				$this->post('/{petId}/uploadImage', '\Swagger\PetShop\Controllers\PetController:uploadFile');
 		});
 	}
 
@@ -60,12 +82,26 @@ class Bootstrap {
 	 * Route to /v2/store api group
 	 */
 	private function routeToStoreController() {
-		$this->app->group('/v2/store', function () {
+		$settings = $this->app->getContainer()->get('settings');
+		$apiConfig = array (
+		  'getInventory' => true,
+		  'placeOrder' => true,
+		  'getOrderById' => true,
+		  'deleteOrder' => true,
+		);
+		if(isset($settings['api']) && isset($settings['api']['StoreController'])) { 
+			$apiConfig = array_merge($apiConfig, $settings['api']['StoreController']);
+		}
+		$this->app->group('/v2/store', function () use($apiConfig) {
 			/** @var App $this */
-			$this->get('/inventory', '\Swagger\PetShop\Controllers\StoreController:getInventory');
-			$this->post('/order', '\Swagger\PetShop\Controllers\StoreController:placeOrder');
-			$this->get('/order/{orderId}', '\Swagger\PetShop\Controllers\StoreController:getOrderById');
-			$this->delete('/order/{orderId}', '\Swagger\PetShop\Controllers\StoreController:deleteOrder');
+			if($apiConfig['getInventory'])
+				$this->get('/inventory', '\Swagger\PetShop\Controllers\StoreController:getInventory');
+			if($apiConfig['placeOrder'])
+				$this->post('/order', '\Swagger\PetShop\Controllers\StoreController:placeOrder');
+			if($apiConfig['getOrderById'])
+				$this->get('/order/{orderId}', '\Swagger\PetShop\Controllers\StoreController:getOrderById');
+			if($apiConfig['deleteOrder'])
+				$this->delete('/order/{orderId}', '\Swagger\PetShop\Controllers\StoreController:deleteOrder');
 		});
 	}
 
@@ -73,16 +109,38 @@ class Bootstrap {
 	 * Route to /v2/user api group
 	 */
 	private function routeToUserController() {
-		$this->app->group('/v2/user', function () {
+		$settings = $this->app->getContainer()->get('settings');
+		$apiConfig = array (
+		  'createUser' => true,
+		  'createUsersWithArrayInput' => true,
+		  'createUsersWithListInput' => true,
+		  'loginUser' => true,
+		  'logoutUser' => true,
+		  'getUserByName' => true,
+		  'updateUser' => true,
+		  'deleteUser' => true,
+		);
+		if(isset($settings['api']) && isset($settings['api']['UserController'])) { 
+			$apiConfig = array_merge($apiConfig, $settings['api']['UserController']);
+		}
+		$this->app->group('/v2/user', function () use($apiConfig) {
 			/** @var App $this */
-			$this->post('', '\Swagger\PetShop\Controllers\UserController:createUser');
-			$this->post('/createWithArray', '\Swagger\PetShop\Controllers\UserController:createUsersWithArrayInput');
-			$this->post('/createWithList', '\Swagger\PetShop\Controllers\UserController:createUsersWithListInput');
-			$this->get('/login', '\Swagger\PetShop\Controllers\UserController:loginUser');
-			$this->get('/logout', '\Swagger\PetShop\Controllers\UserController:logoutUser');
-			$this->get('/{username}', '\Swagger\PetShop\Controllers\UserController:getUserByName');
-			$this->put('/{username}', '\Swagger\PetShop\Controllers\UserController:updateUser');
-			$this->delete('/{username}', '\Swagger\PetShop\Controllers\UserController:deleteUser');
+			if($apiConfig['createUser'])
+				$this->post('', '\Swagger\PetShop\Controllers\UserController:createUser');
+			if($apiConfig['createUsersWithArrayInput'])
+				$this->post('/createWithArray', '\Swagger\PetShop\Controllers\UserController:createUsersWithArrayInput');
+			if($apiConfig['createUsersWithListInput'])
+				$this->post('/createWithList', '\Swagger\PetShop\Controllers\UserController:createUsersWithListInput');
+			if($apiConfig['loginUser'])
+				$this->get('/login', '\Swagger\PetShop\Controllers\UserController:loginUser');
+			if($apiConfig['logoutUser'])
+				$this->get('/logout', '\Swagger\PetShop\Controllers\UserController:logoutUser');
+			if($apiConfig['getUserByName'])
+				$this->get('/{username}', '\Swagger\PetShop\Controllers\UserController:getUserByName');
+			if($apiConfig['updateUser'])
+				$this->put('/{username}', '\Swagger\PetShop\Controllers\UserController:updateUser');
+			if($apiConfig['deleteUser'])
+				$this->delete('/{username}', '\Swagger\PetShop\Controllers\UserController:deleteUser');
 		});
 	}
 }

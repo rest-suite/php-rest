@@ -41,12 +41,26 @@ class Bootstrap {
 	 * Route to /item api group
 	 */
 	private function routeToItemController() {
-		$this->app->group('/item', function () {
+		$settings = $this->app->getContainer()->get('settings');
+		$apiConfig = array (
+		  'addItem' => true,
+		  'getItem' => true,
+		  'updateItem' => true,
+		  'deleteItem' => true,
+		);
+		if(isset($settings['api']) && isset($settings['api']['ItemController'])) { 
+			$apiConfig = array_merge($apiConfig, $settings['api']['ItemController']);
+		}
+		$this->app->group('/item', function () use($apiConfig) {
 			/** @var App $this */
-			$this->post('', '\Example\Api\Controllers\ItemController:addItem');
-			$this->get('/{id}', '\Example\Api\Controllers\ItemController:getItem');
-			$this->put('/{id}', '\Example\Api\Controllers\ItemController:updateItem');
-			$this->delete('/{id}', '\Example\Api\Controllers\ItemController:deleteItem');
+			if($apiConfig['addItem'])
+				$this->post('', '\Example\Api\Controllers\ItemController:addItem');
+			if($apiConfig['getItem'])
+				$this->get('/{id}', '\Example\Api\Controllers\ItemController:getItem');
+			if($apiConfig['updateItem'])
+				$this->put('/{id}', '\Example\Api\Controllers\ItemController:updateItem');
+			if($apiConfig['deleteItem'])
+				$this->delete('/{id}', '\Example\Api\Controllers\ItemController:deleteItem');
 		});
 	}
 }
