@@ -9,15 +9,9 @@ use gossi\codegen\model\PhpMethod;
 use gossi\codegen\model\PhpParameter;
 use gossi\codegen\model\PhpProperty;
 use gossi\docblock\Docblock;
-use gossi\docblock\tags\ParamTag;
-use gossi\docblock\tags\ReturnTag;
 use gossi\docblock\tags\TagFactory;
-use gossi\swagger\collections\Parameters;
 use gossi\swagger\Operation;
-use gossi\swagger\Parameter;
 use gossi\swagger\Path;
-use gossi\swagger\Response;
-use gossi\swagger\Schema;
 use gossi\swagger\Swagger;
 use Symfony\Component\Yaml\Yaml;
 
@@ -106,8 +100,9 @@ class ClassesGenerator {
                                      ->setVisibility('private'));
 
         $construct = PhpMethod::create('__construct')->setDescription('Bootstrap constructor');
+        $construct->addParameter(PhpParameter::create('app')->setType('App')->setValue(null));
 
-        $routes = ['$this->app = new App();'];
+        $routes = ['$this->app = is_null($app) ? new App() : $app;'];
         foreach($this->groups as $group => $info) {
             $ctrl = ucfirst(strtolower($group)).'Controller';
             $controller = $this->controllers->get($ctrl);

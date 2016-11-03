@@ -22,9 +22,11 @@ class Bootstrap {
 
 	/**
 	 * Bootstrap constructor
+	 * 
+	 * @param App $app
 	 */
-	public function __construct() {
-		$this->app = new App();
+	public function __construct(App $app = null) {
+		$this->app = is_null($app) ? new App() : $app;
 		$this->routeToPetController();
 		$this->routeToStoreController();
 		$this->routeToUserController();
