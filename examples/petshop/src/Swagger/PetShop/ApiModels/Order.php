@@ -162,4 +162,20 @@ class Order {
 	public function setStatus($status) {
 		$this->status = $status;
 	}
+
+	/**
+	 * Return object as array
+	 * 
+	 * @return array
+	 */
+	public function toArray() {
+		return [
+			'id' => $this->getId(),
+			'petId' => $this->getPetId(),
+			'quantity' => $this->getQuantity(),
+			'shipDate' => $this->getShipDate(),
+			'status' => $this->getStatus(),
+			'complete' => $this->getComplete()
+		];
+	}
 }

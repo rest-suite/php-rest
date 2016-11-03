@@ -95,4 +95,17 @@ class Error {
 	public function setMessage($message) {
 		$this->message = $message;
 	}
+
+	/**
+	 * Return object as array
+	 * 
+	 * @return array
+	 */
+	public function toArray() {
+		return [
+			'code' => $this->getCode(),
+			'message' => $this->getMessage(),
+			'exception' => $this->getException()
+		];
+	}
 }

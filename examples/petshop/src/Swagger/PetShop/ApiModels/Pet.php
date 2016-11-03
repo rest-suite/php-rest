@@ -170,4 +170,20 @@ class Pet {
 	public function setTags($tags) {
 		$this->tags = $tags;
 	}
+
+	/**
+	 * Return object as array
+	 * 
+	 * @return array
+	 */
+	public function toArray() {
+		return [
+			'id' => $this->getId(),
+			'category' => $this->getCategory(),
+			'name' => $this->getName(),
+			'photoUrls' => $this->getPhotoUrls(),
+			'tags' => $this->getTags(),
+			'status' => $this->getStatus()
+		];
+	}
 }

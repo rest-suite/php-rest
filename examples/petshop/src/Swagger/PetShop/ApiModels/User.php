@@ -210,4 +210,22 @@ class User {
 	public function setUserStatus($userStatus) {
 		$this->userStatus = $userStatus;
 	}
+
+	/**
+	 * Return object as array
+	 * 
+	 * @return array
+	 */
+	public function toArray() {
+		return [
+			'id' => $this->getId(),
+			'username' => $this->getUsername(),
+			'firstName' => $this->getFirstName(),
+			'lastName' => $this->getLastName(),
+			'email' => $this->getEmail(),
+			'password' => $this->getPassword(),
+			'phone' => $this->getPhone(),
+			'userStatus' => $this->getUserStatus()
+		];
+	}
 }

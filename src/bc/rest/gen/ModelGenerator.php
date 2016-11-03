@@ -103,6 +103,9 @@ class ModelGenerator {
     private function createProperties($def, $model) {
         /** @var ArrayList $required */
         $required = $def->getRequired();
+
+        $toArray = [];
+
         /** @var Schema $property */
         foreach($def->getProperties() as $param => $property) {
             $prop = PhpProperty::create($param)
@@ -179,7 +182,14 @@ class ModelGenerator {
             $model->setMethod($setter);
 
             $model->setProperty($prop);
+            $toArray[] = '\''.$prop->getName().'\' => $this->'.$getter->getName().'()';
         }
+
+        $model->setMethod(
+            PhpMethod::create('toArray')
+                     ->setType('array')
+                     ->setDescription('Return object as array')
+                     ->setBody("return [\n\t".implode(",\n\t", $toArray)."\n];"));
     }
 
     public function getAll() {

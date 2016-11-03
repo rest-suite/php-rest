@@ -88,4 +88,17 @@ class ApiResponse {
 	public function setType($type) {
 		$this->type = $type;
 	}
+
+	/**
+	 * Return object as array
+	 * 
+	 * @return array
+	 */
+	public function toArray() {
+		return [
+			'code' => $this->getCode(),
+			'type' => $this->getType(),
+			'message' => $this->getMessage()
+		];
+	}
 }

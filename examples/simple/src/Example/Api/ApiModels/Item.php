@@ -98,4 +98,17 @@ class Item {
 		}
 		$this->id = $id;
 	}
+
+	/**
+	 * Return object as array
+	 * 
+	 * @return array
+	 */
+	public function toArray() {
+		return [
+			'id' => $this->getId(),
+			'content' => $this->getContent(),
+			'flag' => $this->getFlag()
+		];
+	}
 }

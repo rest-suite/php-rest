@@ -64,4 +64,16 @@ class Tag {
 	public function setName($name) {
 		$this->name = $name;
 	}
+
+	/**
+	 * Return object as array
+	 * 
+	 * @return array
+	 */
+	public function toArray() {
+		return [
+			'id' => $this->getId(),
+			'name' => $this->getName()
+		];
+	}
 }
