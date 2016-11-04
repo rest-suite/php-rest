@@ -21,6 +21,19 @@ class Bootstrap {
 	private $app;
 
 	/**
+	 * Return generated info from specs
+	 * 
+	 * @return array
+	 */
+	public static function getInfo() {
+		return array (
+		  'version' => '1.0.0',
+		  'title' => 'ExampleApi',
+		  'description' => 'Example Api',
+		);
+	}
+
+	/**
 	 * Bootstrap constructor
 	 * 
 	 * @param App $app

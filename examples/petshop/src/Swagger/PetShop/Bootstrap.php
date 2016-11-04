@@ -21,6 +21,29 @@ class Bootstrap {
 	private $app;
 
 	/**
+	 * Return generated info from specs
+	 * 
+	 * @return array
+	 */
+	public static function getInfo() {
+		return array (
+		  'version' => '1.0.0',
+		  'title' => 'Swagger Petstore',
+		  'description' => 'This is a sample server Petstore server.',
+		  'termsOfService' => 'http://swagger.io/terms/',
+		  'contact' => 
+		  array (
+		    'email' => 'apiteam@swagger.io',
+		  ),
+		  'license' => 
+		  array (
+		    'name' => 'Apache 2.0',
+		    'url' => 'http://www.apache.org/licenses/LICENSE-2.0.html',
+		  ),
+		);
+	}
+
+	/**
 	 * Bootstrap constructor
 	 * 
 	 * @param App $app

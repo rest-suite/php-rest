@@ -135,7 +135,7 @@ class ClassesGenerator {
                 $defaultConfig[$op->getOperationId()] = true;
             }
             $subBody[] = '}';
-            
+
             $this->configs[$ctrl] = $defaultConfig;
 
             $body[] = '$settings = $this->app->getContainer()->get(\'settings\');';
@@ -157,6 +157,15 @@ class ClassesGenerator {
         $runner = PhpMethod::create('run')->setDescription('Start application');
         $runner->setBody('$this->app->run();');
         $bootstrap->setMethod($runner);
+
+        $getInfo =
+            PhpMethod::create('getInfo')
+                     ->setStatic(true)
+                     ->setType('array')
+                     ->setDescription('Return generated info from specs')
+                     ->setBody('return '.var_export($this->swagger->getInfo()->toArray(), true).';');
+
+        $bootstrap->setMethod($getInfo);
 
         $this->bootstrap = $bootstrap;
     }
@@ -202,7 +211,7 @@ class ClassesGenerator {
     /**
      * @return array
      */
-    public function getConfigs() { 
+    public function getConfigs() {
         return $this->configs;
     }
 }
