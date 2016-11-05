@@ -70,11 +70,11 @@ class Bootstrap {
 			if($apiConfig['addItem'])
 				$this->post('', '\Example\Api\Controllers\ItemController:addItem');
 			if($apiConfig['getItem'])
-				$this->get('/{id}', '\Example\Api\Controllers\ItemController:getItem');
+				$this->get('/{id:[0-9]+}', '\Example\Api\Controllers\ItemController:getItem');
 			if($apiConfig['updateItem'])
-				$this->put('/{id}', '\Example\Api\Controllers\ItemController:updateItem');
+				$this->put('/{id:[0-9]+}', '\Example\Api\Controllers\ItemController:updateItem');
 			if($apiConfig['deleteItem'])
-				$this->delete('/{id}', '\Example\Api\Controllers\ItemController:deleteItem');
+				$this->delete('/{id:[0-9]+}', '\Example\Api\Controllers\ItemController:deleteItem');
 		});
 	}
 }

@@ -9,6 +9,7 @@ use gossi\codegen\model\PhpProperty;
 use gossi\docblock\Docblock;
 use gossi\docblock\tags\TagFactory;
 use gossi\swagger\Operation;
+use gossi\swagger\Parameter;
 use gossi\swagger\Path;
 use gossi\swagger\Swagger;
 use Symfony\Component\Yaml\Yaml;
@@ -129,6 +130,22 @@ class ClassesGenerator {
                 /** @var Operation $op */
                 $op = $item['operation'];
                 $p = str_replace('/'.$group, '', $currentPath->getPath());
+                if($currentPath->getParameters()->size() > 0) {
+                    /**
+                     * @var string $key
+                     * @var Parameter $val
+                     */
+                    foreach($currentPath->getParameters() as $val) {
+                        if($val->getIn() == 'path'
+                           && strpos($p, $val->getName()) !== false
+                           && !empty($val->getPattern())
+                        ) {
+                            $p = str_replace(
+                                '{'.$val->getName().'}', 
+                                '{'.$val->getName().':'.trim($val->getPattern(), '/').'}', $p);
+                        }
+                    }
+                }
                 $subBody[] = "\t".'if($apiConfig[\''.$op->getOperationId().'\'])'
                              ."\n\t\t".'$this->'.strtolower($item['method'])
                              .'(\''.$p.'\', \'\\'.$controller->getQualifiedName().':'.$op->getOperationId().'\');';

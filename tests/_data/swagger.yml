@@ -73,6 +73,7 @@ paths:
         type: integer
         format: int64
         required: true
+        pattern: /[0-9]+/
     get:
       summary: get item by id
       operationId: getItem
