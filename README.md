@@ -47,6 +47,11 @@ Arguments:
 Options:
   -o, --output[=OUTPUT]       output path for generated code [default: "./"]
   -ns, --namespace=NAMESPACE  base namespace for generated code
+  -m, --models                only generate files for models
+  -c, --controllers           only generate files for controllers
+  -t, --tests                 only generate files for tests
+  -s, --settings              only generate dist settings files
+      --override              override existing files  
 ````
 
 ## Synchronization

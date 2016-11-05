@@ -23,7 +23,8 @@ class GenerateCommand extends Command {
              ->addOption(Builder::OPT_MODELS, 'm', InputOption::VALUE_NONE, "only generate files for models")
              ->addOption(Builder::OPT_CONTROLLERS, 'c', InputOption::VALUE_NONE, "only generate files for controllers")
              ->addOption(Builder::OPT_TESTS, 't', InputOption::VALUE_NONE, "only generate files for tests")
-             ->addOption(Builder::OPT_SETTINGS, 's', InputOption::VALUE_NONE, "only generate dist settings files");
+             ->addOption(Builder::OPT_SETTINGS, 's', InputOption::VALUE_NONE, "only generate dist settings files")
+             ->addOption(Builder::OPT_OVERRIDE, null, InputOption::VALUE_NONE, "override existing files");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
@@ -42,7 +43,7 @@ class GenerateCommand extends Command {
         $optControllers = $input->getOption(Builder::OPT_CONTROLLERS);
         $optSettings = $input->getOption(Builder::OPT_SETTINGS);
         $optTests = $input->getOption(Builder::OPT_TESTS);
-                
+
         $options = [
             Builder::OPT_MODELS      => $optModels,
             Builder::OPT_CONTROLLERS => $optControllers,
@@ -50,6 +51,7 @@ class GenerateCommand extends Command {
             Builder::OPT_TESTS       => $optTests,
             Builder::OPT_ALL         => !($optModels | $optControllers | $optSettings | $optTests),
             Builder::OPT_NAMESPACE   => $input->getOption(Builder::OPT_NAMESPACE),
+            Builder::OPT_OVERRIDE    => $input->getOption(Builder::OPT_OVERRIDE),
             Builder::OPT_OUTPUT_PATH => $outputPath,
             Builder::OPT_SWAGGER     => $swaggerFile
         ];

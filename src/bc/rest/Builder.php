@@ -18,6 +18,7 @@ class Builder {
     const OPT_SETTINGS = 'settings';
     const OPT_OUTPUT_PATH = 'outputPath';
     const OPT_SWAGGER = 'swagger';
+    const OPT_OVERRIDE = 'override';
 
     /**
      * @var array
@@ -43,7 +44,7 @@ class Builder {
      * @param OutputInterface $output
      */
     public function __construct(array $options, $output) {
-        if(count($options) != 8) throw new \InvalidArgumentException();
+        if(count($options) != 9) throw new \InvalidArgumentException();
         $this->options = $options;
         $this->output = $output;
         $this->gen = new CodeGenerator(['generateEmptyDocblock' => false]);
@@ -65,26 +66,38 @@ class Builder {
 
     private function writeControllers() {
         if($this->options[self::OPT_ALL] || $this->options[self::OPT_CONTROLLERS]) {
-            $this->writeClass($this->classes->getBootstrap());
-            $this->output->writeln("Bootstrap created");
+            if($this->writeClass($this->classes->getBootstrap())) {
+                $this->output->writeln("<info>Bootstrap created</info>");
+            }
 
             foreach($this->classes->getControllers() as $controller) {
-                $this->writeClass($controller);
-                $this->output->writeln($controller->getName()." created");
+                if($this->writeClass($controller)) {
+                    $this->output->writeln('<info>'.$controller->getName()." created</info>");
+                }
             }
         }
     }
 
     /**
      * @param PhpClass $class
+     *
+     * @return bool
      */
     private function writeClass($class) {
         $path = $this->srcPath.$this->getPathFromNamespace($class->getNamespace());
         if(!file_exists($path)) {
             mkdir($path, 0755, true);
         }
-        file_put_contents($path.DIRECTORY_SEPARATOR.$class->getName().'.php',
-                          "<?php\n\n".$this->gen->generate($class));
+        $fileName = $path.DIRECTORY_SEPARATOR.$class->getName().'.php';
+        if(file_exists($fileName) && !$this->options[self::OPT_OVERRIDE]) {
+            $this->output->writeln("<error>File '$fileName' exists</error>");
+
+            return false;
+        }
+
+        file_put_contents($fileName, "<?php\n\n".$this->gen->generate($class));
+
+        return true;
     }
 
     /**
@@ -99,8 +112,9 @@ class Builder {
     private function writeModels() {
         if($this->options[self::OPT_ALL] || $this->options[self::OPT_MODELS]) {
             foreach($this->classes->getModels() as $model) {
-                $this->writeClass($model);
-                $this->output->writeln($model->getName()." created");
+                if($this->writeClass($model)) {
+                    $this->output->writeln('<info>'.$model->getName()." created</info>");
+                }
             }
         }
     }
@@ -114,13 +128,27 @@ class Builder {
 
             $configs = $this->classes->getConfigs();
             $fileName = $configPath.DIRECTORY_SEPARATOR.'api.php.dist';
+            if(file_exists($fileName) && !$this->options[self::OPT_OVERRIDE]) {
+                $this->output->writeln("<error>File '$fileName' exists</error>");
+
+                return;
+            }
             file_put_contents($fileName, "<?php \n\n return ".var_export($configs, true).';');
-            $this->output->writeln("Config created");
+            $this->output->writeln("<info>Config created</info>");
         }
+    }
+
+    private function writeTests() {
+        //TODO
     }
 
     private function writeComposerJson() {
         $path = $this->options[self::OPT_OUTPUT_PATH].DIRECTORY_SEPARATOR.'composer.json';
+        if(file_exists($path) && !$this->options[self::OPT_OVERRIDE]) {
+            $this->output->writeln("<error>File '$path' exists</error>");
+
+            return;
+        }
         $ns = explode('\\', $this->options[self::OPT_NAMESPACE]);
         $vendor = array_shift($ns);
         $json = [
@@ -150,10 +178,6 @@ class Builder {
             ]
         ];
         file_put_contents($path, json_encode($json, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-        $this->output->writeln("composer.json created");
-    }
-
-    private function writeTests() { 
-        //TODO
+        $this->output->writeln("<info>composer.json created</info>");
     }
 }
