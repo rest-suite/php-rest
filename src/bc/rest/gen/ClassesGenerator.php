@@ -188,7 +188,7 @@ class ClassesGenerator {
     }
 
     /**
-     * @return \gossi\codegen\model\PhpClass[]
+     * @return PhpClass[]
      */
     public function getControllers() {
         return $this->controllers->getAll();
@@ -202,7 +202,7 @@ class ClassesGenerator {
     }
 
     /**
-     * @return \gossi\codegen\model\PhpClass[]
+     * @return PhpClass[]
      */
     public function getModels() {
         return $this->models->getAll();

@@ -1,0 +1,22 @@
+{
+    "name": "example/api",
+    "minimum-stability": "dev",
+    "require": {
+        "slim/slim": "3.5.0"
+    },
+    "require-dev": {
+        "bc/php-rest": "*",
+        "codeception/codeception": "2.2.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Example\\Api\\": "./src/Example/Api/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/theinpu/swagger.git"
+        }
+    ]
+}

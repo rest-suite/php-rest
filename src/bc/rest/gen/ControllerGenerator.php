@@ -234,7 +234,7 @@ class ControllerGenerator {
     }
 
     /**
-     * @return array|\gossi\codegen\model\PhpClass[]
+     * @return array|PhpClass[]
      */
     public function getAll() {
         return $this->controllers;

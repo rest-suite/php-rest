@@ -1,6 +1,8 @@
 swagger: "2.0"
 info:
-  description: Example Api
+  description: >
+    Example Api
+    Multi line description
   title: ExampleApi
   version: 1.0.0
 consumes:

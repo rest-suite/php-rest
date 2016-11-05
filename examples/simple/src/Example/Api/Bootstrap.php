@@ -29,7 +29,8 @@ class Bootstrap {
 		return array (
 		  'version' => '1.0.0',
 		  'title' => 'ExampleApi',
-		  'description' => 'Example Api',
+		  'description' => 'Example Api Multi line description
+		',
 		);
 	}
 
