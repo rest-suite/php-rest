@@ -34,7 +34,7 @@ class Error {
 	 */
 	public function __construct(array $data) {
 		if(!isset($data['message']))
-			 throw new \InvalidArgumentException('Property message is required');
+			 throw new \InvalidArgumentException("Property 'message' is required", 400);
 
 		if(isset($data['code'])) $this->code = $data['code'];
 		if(isset($data['exception'])) $this->exception = $data['exception'];

@@ -5,6 +5,7 @@ namespace Swagger\PetShop\Controllers;
 use Slim\Container;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Slim\Http\UploadedFile;
 use Swagger\PetShop\ApiModels\Pet;
 
 /**
@@ -44,12 +45,12 @@ class PetController {
 	 * @return Response
 	 */
 	public function addPet(Request $request, Response $response, array $args) {
+		/** @var Pet $pet */
 		$pet = new Pet($request->getParsedBody());
 
 		//TODO Method addPet not implemented
-		$response = $response->withStatus(501, 'PetController::addPet not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'PetController::addPet not implemented');
 	}
 
 	/**
@@ -65,12 +66,12 @@ class PetController {
 	 * @return Response
 	 */
 	public function deletePet(Request $request, Response $response, array $args) {
+		/** @var int $petId */
 		$petId = $args['petId'];
 
 		//TODO Method deletePet not implemented
-		$response = $response->withStatus(501, 'PetController::deletePet not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'PetController::deletePet not implemented');
 	}
 
 	/**
@@ -88,12 +89,12 @@ class PetController {
 	 * @return Response
 	 */
 	public function findPetsByStatus(Request $request, Response $response, array $args) {
+		/** @var array $status */
 		$status = $request->getQueryParam('status', null);
 
 		//TODO Method findPetsByStatus not implemented
-		$response = $response->withStatus(501, 'PetController::findPetsByStatus not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'PetController::findPetsByStatus not implemented');
 	}
 
 	/**
@@ -111,12 +112,12 @@ class PetController {
 	 * @return Response
 	 */
 	public function findPetsByTags(Request $request, Response $response, array $args) {
+		/** @var array $tags */
 		$tags = $request->getQueryParam('tags', null);
 
 		//TODO Method findPetsByTags not implemented
-		$response = $response->withStatus(501, 'PetController::findPetsByTags not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'PetController::findPetsByTags not implemented');
 	}
 
 	/**
@@ -135,12 +136,12 @@ class PetController {
 	 * @return Response
 	 */
 	public function getPetById(Request $request, Response $response, array $args) {
+		/** @var int $petId */
 		$petId = $args['petId'];
 
 		//TODO Method getPetById not implemented
-		$response = $response->withStatus(501, 'PetController::getPetById not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'PetController::getPetById not implemented');
 	}
 
 	/**
@@ -157,12 +158,12 @@ class PetController {
 	 * @return Response
 	 */
 	public function updatePet(Request $request, Response $response, array $args) {
+		/** @var Pet $pet */
 		$pet = new Pet($request->getParsedBody());
 
 		//TODO Method updatePet not implemented
-		$response = $response->withStatus(501, 'PetController::updatePet not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'PetController::updatePet not implemented');
 	}
 
 	/**
@@ -170,6 +171,8 @@ class PetController {
 	 * 
 	 * @api-response:405 Invalid input
 	 * @internal int $petId ID of pet that needs to be updated
+	 * @internal string $name Updated name of the pet
+	 * @internal string $status Updated status of the pet
 	 * @api POST /pet/{petId}
 	 * @param Request $request
 	 * @param Response $response
@@ -177,12 +180,16 @@ class PetController {
 	 * @return Response
 	 */
 	public function updatePetWithForm(Request $request, Response $response, array $args) {
+		/** @var int $petId */
 		$petId = $args['petId'];
+		/** @var string $name */
+		$name = $request->getParam('name', null);
+		/** @var string $status */
+		$status = $request->getParam('status', null);
 
 		//TODO Method updatePetWithForm not implemented
-		$response = $response->withStatus(501, 'PetController::updatePetWithForm not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'PetController::updatePetWithForm not implemented');
 	}
 
 	/**
@@ -190,6 +197,8 @@ class PetController {
 	 * 
 	 * @api-response:200 Swagger\PetShop\ApiModels\ApiResponse successful operation
 	 * @internal int $petId ID of pet to update
+	 * @internal string $additionalMetadata Additional data to pass to server
+	 * @internal UploadedFile $file file to upload
 	 * @api POST /pet/{petId}/uploadImage
 	 * @param Request $request
 	 * @param Response $response
@@ -197,11 +206,16 @@ class PetController {
 	 * @return Response
 	 */
 	public function uploadFile(Request $request, Response $response, array $args) {
+		$files = $request->getUploadedFiles();
+		/** @var int $petId */
 		$petId = $args['petId'];
+		/** @var string $additionalMetadata */
+		$additionalMetadata = $request->getParam('additionalMetadata', null);
+		/** @var UploadedFile $file */
+		$file = isset($files['file']) ? $files['file'] : null;
 
 		//TODO Method uploadFile not implemented
-		$response = $response->withStatus(501, 'PetController::uploadFile not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'PetController::uploadFile not implemented');
 	}
 }

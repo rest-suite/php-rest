@@ -12,6 +12,7 @@ use gossi\swagger\Operation;
 use gossi\swagger\Parameter;
 use gossi\swagger\Path;
 use gossi\swagger\Swagger;
+use Slim\Http\UploadedFile;
 use Symfony\Component\Yaml\Yaml;
 
 class ClassesGenerator {
@@ -95,6 +96,8 @@ class ClassesGenerator {
         $bootstrap
             ->setNamespace($this->namespace)
             ->addUseStatement('Slim\\App')
+            ->addUseStatement('Slim\\Http\\Request')
+            ->addUseStatement('Slim\\Http\\Response')
             ->setDescription('Class Bootstrap')
             ->setLongDescription('Creating routes and starting application')
             ->setDocblock(Docblock::create()->appendTag(TagFactory::create('package', $this->namespace)))
@@ -108,6 +111,7 @@ class ClassesGenerator {
 
         $routes = [];
         $routes[] = '$this->app = is_null($app) ? new App() : $app;';
+        $routes[] = "\$this->app->add('{$bootstrap->getQualifiedName()}::processRequest');";
 
         foreach($this->groups as $group => $info) {
             $ctrl = ucfirst(strtolower($group)).'Controller';
@@ -141,14 +145,14 @@ class ClassesGenerator {
                            && !empty($val->getPattern())
                         ) {
                             $p = str_replace(
-                                '{'.$val->getName().'}', 
+                                '{'.$val->getName().'}',
                                 '{'.$val->getName().':'.trim($val->getPattern(), '/').'}', $p);
                         }
                     }
                 }
-                $subBody[] = "\t".'if($apiConfig[\''.$op->getOperationId().'\'])'
-                             ."\n\t\t".'$this->'.strtolower($item['method'])
-                             .'(\''.$p.'\', \'\\'.$controller->getQualifiedName().':'.$op->getOperationId().'\');';
+                $subBody[] = "\t".'if($apiConfig[\''.$op->getOperationId().'\'])';
+                $method = strtolower($item['method']);
+                $subBody[] = "\t\t\$this->$method('".$p."', '\\".$controller->getQualifiedName().':'.$op->getOperationId().'\');';
                 $defaultConfig[$op->getOperationId()] = true;
             }
             $subBody[] = '}';
@@ -184,6 +188,37 @@ class ClassesGenerator {
 
         $bootstrap->setMethod($getInfo);
 
+        $bootstrap->setMethod(
+            PhpMethod::create('processRequest')
+                     ->setType('Response')
+                     ->setStatic(true)
+                     ->addSimpleParameter('request', 'Request')
+                     ->addSimpleParameter('response', 'Response')
+                     ->addSimpleParameter('next', 'callable')
+                     ->setBody(<<<BODY
+try {
+    /** @var Response \$response */
+    \$response = \$next(\$request, \$response);
+}
+catch(\\Exception \$e) {
+    \$json = [
+                'message'   => \$e->getMessage(),
+                'code'      => \$e->getCode(),
+                'exception' => get_class(\$e)
+            ];
+    return \$response
+        ->withStatus(
+            in_array(\$e->getCode(), 
+                    [400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411,
+                    412, 413, 414, 415, 416, 417, 501, 502, 503, 504, 505]) 
+                 ? \$e->getCode() : 500)
+        ->withJson(\$json);
+}
+return \$response->withStatus(204, 'Request processed');
+BODY
+                     )
+        );
+
         $this->bootstrap = $bootstrap;
     }
 
@@ -199,8 +234,10 @@ class ClassesGenerator {
                 return 'string';
             case 'array':
                 return 'array';
+            case 'file':
+                return 'UploadedFile';
             default:
-                return '';
+                return $type;
         }
     }
 

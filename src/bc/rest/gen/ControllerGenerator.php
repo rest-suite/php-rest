@@ -97,16 +97,37 @@ class ControllerGenerator {
                                    ->appendTag(TagFactory::create('api', strtoupper($item['method']).' '.$path->getPath()));
 
                     $body = [];
+                    $uses = [];
 
                     $internal = $this->parseParams($path->getParameters());
                     $internal = array_merge($internal, $this->parseParams($op->getParameters()));
 
                     $internalInit = [];
 
-                    foreach($internal as $p) {
+                    $useFiles = false;
+
+                    foreach($internal as $paramName => $p) {
+                        if(isset($p['param'])) {
+                            /** @var Parameter $genParam */
+                            $genParam = $p['param'];
+                            if($genParam->getType() == "file") {
+                                $useFiles = true;
+                            }
+                            if(isset($p['body'])) {
+                                $uses[] = '$'.$paramName;
+                            }
+                            $type = ClassesGenerator::getType($genParam->getType());
+                            if(!empty($type)) {
+                                $internalInit[] = '/** @var '.$type.' $'.$paramName.' */';
+                            }
+                        }
                         if(isset($p['tag'])) $doc->appendTag($p['tag']);
                         if(isset($p['body'])) $internalInit[] = $p['body'];
                         if(isset($p['usage'])) $controllers[$name]->addUseStatement($p['usage']);
+                    }
+
+                    if($useFiles) {
+                        $body[] = '$files = $request->getUploadedFiles();';
                     }
 
                     $body = array_merge($body, $internalInit);
@@ -139,10 +160,11 @@ class ControllerGenerator {
                     $method->addParameter(PhpParameter::create('response')->setType('Response'));
                     $method->addParameter(PhpParameter::create('args')->setType('array'));
 
-                    $body = $this->appendToDo($body, $name, $method);
+                    $body = $this->appendToDo($body, $method);
 
                     $body[] = '';
-                    $body[] = 'return $response;';
+                    $body[] = "return \$response->withStatus(501, ".
+                              "'{$controllers[$name]->getName()}::{$method->getName()} not implemented');";
 
                     $method->setBody(implode("\n", $body));
 
@@ -178,11 +200,27 @@ class ControllerGenerator {
                             if($this->swagger->getDefinitions()->has($refName)) {
                                 $model = $refName.' $'.lcfirst($refName);
                                 $r['param'] = $param;
+                                $r['param']->setType($refName);
                                 $r['tag'] = TagFactory::create('internal', $model);
                                 $r['body'] = '$'.lcfirst($refName).' = new '.$refName.'($request->getParsedBody());';
                                 $r['usage'] = $this->namespace.'\\ApiModels\\'.$refName;
-                                $result[$name] = $r;
+                                $result[lcfirst($refName)] = $r;
                             }
+                        }
+                        break;
+                    case 'formData':
+                        $r['param'] = $param;
+                        if($param->getType() == "file") {
+                            $r['body'] =
+                                sprintf("\$%s = isset(\$files['%s']) ? \$files['%s'] : null;",
+                                        $name, $name, $name);
+                            $r['usage'] = 'Slim\\Http\\UploadedFile';
+                        }
+                        else {
+                            $r['body'] =
+                                sprintf("\$%s = \$request->getParam('%s', %s);",
+                                        $name, $name,
+                                        is_null($param->getDefault()) ? 'null' : $param->getDefault());
                         }
                         break;
                     case 'path':
@@ -221,16 +259,13 @@ class ControllerGenerator {
 
     /**
      * @param array $body
-     * @param string $name
      * @param PhpMethod $method
      *
      * @return array
      */
-    private function appendToDo($body, $name, $method) {
+    private function appendToDo($body, $method) {
         $body[] = '';
         $body[] = '//TODO Method '.$method->getName().' not implemented';
-        $body[] = sprintf('$response = $response->withStatus(501, \'%s::%s not implemented\');',
-                          $name, $method->getName());
 
         return $body;
     }

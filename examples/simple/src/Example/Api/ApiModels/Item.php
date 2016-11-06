@@ -34,7 +34,7 @@ class Item {
 	 */
 	public function __construct(array $data) {
 		if(!isset($data['content']))
-			 throw new \InvalidArgumentException('Property content is required');
+			 throw new \InvalidArgumentException("Property 'content' is required", 400);
 
 		if(isset($data['id'])) $this->id = $data['id'];
 		if(isset($data['flag'])) $this->flag = $data['flag'];

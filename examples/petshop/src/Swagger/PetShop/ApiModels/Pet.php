@@ -50,9 +50,9 @@ class Pet {
 	 */
 	public function __construct(array $data) {
 		if(!isset($data['name']))
-			 throw new \InvalidArgumentException('Property name is required');
+			 throw new \InvalidArgumentException("Property 'name' is required", 400);
 		if(!isset($data['photoUrls']))
-			 throw new \InvalidArgumentException('Property photoUrls is required');
+			 throw new \InvalidArgumentException("Property 'photoUrls' is required", 400);
 
 		if(isset($data['id'])) $this->id = $data['id'];
 		if(isset($data['category'])) $this->category = $data['category'];

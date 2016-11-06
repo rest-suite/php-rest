@@ -46,12 +46,12 @@ class ItemController {
 	 * @return Response
 	 */
 	public function addItem(Request $request, Response $response, array $args) {
+		/** @var Item $item */
 		$item = new Item($request->getParsedBody());
 
 		//TODO Method addItem not implemented
-		$response = $response->withStatus(501, 'ItemController::addItem not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'ItemController::addItem not implemented');
 	}
 
 	/**
@@ -68,12 +68,12 @@ class ItemController {
 	 * @return Response
 	 */
 	public function deleteItem(Request $request, Response $response, array $args) {
+		/** @var int $id */
 		$id = $args['id'];
 
 		//TODO Method deleteItem not implemented
-		$response = $response->withStatus(501, 'ItemController::deleteItem not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'ItemController::deleteItem not implemented');
 	}
 
 	/**
@@ -90,12 +90,12 @@ class ItemController {
 	 * @return Response
 	 */
 	public function getItem(Request $request, Response $response, array $args) {
+		/** @var int $id */
 		$id = $args['id'];
 
 		//TODO Method getItem not implemented
-		$response = $response->withStatus(501, 'ItemController::getItem not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'ItemController::getItem not implemented');
 	}
 
 	/**
@@ -114,12 +114,13 @@ class ItemController {
 	 * @return Response
 	 */
 	public function updateItem(Request $request, Response $response, array $args) {
+		/** @var int $id */
 		$id = $args['id'];
+		/** @var Item $item */
 		$item = new Item($request->getParsedBody());
 
 		//TODO Method updateItem not implemented
-		$response = $response->withStatus(501, 'ItemController::updateItem not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'ItemController::updateItem not implemented');
 	}
 }

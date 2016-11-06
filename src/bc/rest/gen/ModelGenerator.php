@@ -77,8 +77,9 @@ class ModelGenerator {
                 /** @var Docblock $doc */
                 $doc = $property->getDocblock();
                 if($doc->getTags('required')->size() > 0) {
-                    $checks[] = 'if(!isset($data[\''.$property->getName().'\']))'."\n"
-                                ."\t".' throw new \InvalidArgumentException(\'Property '.$property->getName().' is required\');';
+                    $checks[]
+                        = 'if(!isset($data[\''.$property->getName().'\']))'."\n"
+                          ."\t".' throw new \InvalidArgumentException("Property \''.$property->getName().'\' is required", 400);';
                     $unchecked[] = '$this->'.$property->getName().' = $data[\''.$property->getName().'\'];';
                 }
                 else {

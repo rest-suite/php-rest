@@ -3,6 +3,8 @@
 namespace Swagger\PetShop;
 
 use Slim\App;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 /**
  * Class Bootstrap
@@ -44,12 +46,41 @@ class Bootstrap {
 	}
 
 	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @param callable $next
+	 * @return Response
+	 */
+	public static function processRequest(Request $request, Response $response, callable $next) {
+		try {
+		    /** @var Response $response */
+		    $response = $next($request, $response);
+		}
+		catch(\Exception $e) {
+		    $json = [
+		                'message'   => $e->getMessage(),
+		                'code'      => $e->getCode(),
+		                'exception' => get_class($e)
+		            ];
+		    return $response
+		        ->withStatus(
+		            in_array($e->getCode(), 
+		                    [400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411,
+		                    412, 413, 414, 415, 416, 417, 501, 502, 503, 504, 505]) 
+		                 ? $e->getCode() : 500)
+		        ->withJson($json);
+		}
+		return $response->withStatus(204, 'Request processed');
+	}
+
+	/**
 	 * Bootstrap constructor
 	 * 
 	 * @param App $app
 	 */
 	public function __construct(App $app = null) {
 		$this->app = is_null($app) ? new App() : $app;
+		$this->app->add('Swagger\PetShop\Bootstrap::processRequest');
 		$this->routeToPetController();
 		$this->routeToStoreController();
 		$this->routeToUserController();

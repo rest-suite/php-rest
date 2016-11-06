@@ -46,12 +46,12 @@ class UserController {
 	 * @return Response
 	 */
 	public function createUser(Request $request, Response $response, array $args) {
+		/** @var User $user */
 		$user = new User($request->getParsedBody());
 
 		//TODO Method createUser not implemented
-		$response = $response->withStatus(501, 'UserController::createUser not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'UserController::createUser not implemented');
 	}
 
 	/**
@@ -66,9 +66,8 @@ class UserController {
 	 */
 	public function createUsersWithArrayInput(Request $request, Response $response, array $args) {
 		//TODO Method createUsersWithArrayInput not implemented
-		$response = $response->withStatus(501, 'UserController::createUsersWithArrayInput not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'UserController::createUsersWithArrayInput not implemented');
 	}
 
 	/**
@@ -83,9 +82,8 @@ class UserController {
 	 */
 	public function createUsersWithListInput(Request $request, Response $response, array $args) {
 		//TODO Method createUsersWithListInput not implemented
-		$response = $response->withStatus(501, 'UserController::createUsersWithListInput not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'UserController::createUsersWithListInput not implemented');
 	}
 
 	/**
@@ -103,12 +101,12 @@ class UserController {
 	 * @return Response
 	 */
 	public function deleteUser(Request $request, Response $response, array $args) {
+		/** @var string $username */
 		$username = $args['username'];
 
 		//TODO Method deleteUser not implemented
-		$response = $response->withStatus(501, 'UserController::deleteUser not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'UserController::deleteUser not implemented');
 	}
 
 	/**
@@ -125,12 +123,12 @@ class UserController {
 	 * @return Response
 	 */
 	public function getUserByName(Request $request, Response $response, array $args) {
+		/** @var string $username */
 		$username = $args['username'];
 
 		//TODO Method getUserByName not implemented
-		$response = $response->withStatus(501, 'UserController::getUserByName not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'UserController::getUserByName not implemented');
 	}
 
 	/**
@@ -147,13 +145,14 @@ class UserController {
 	 * @return Response
 	 */
 	public function loginUser(Request $request, Response $response, array $args) {
+		/** @var string $username */
 		$username = $request->getQueryParam('username', null);
+		/** @var string $password */
 		$password = $request->getQueryParam('password', null);
 
 		//TODO Method loginUser not implemented
-		$response = $response->withStatus(501, 'UserController::loginUser not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'UserController::loginUser not implemented');
 	}
 
 	/**
@@ -168,9 +167,8 @@ class UserController {
 	 */
 	public function logoutUser(Request $request, Response $response, array $args) {
 		//TODO Method logoutUser not implemented
-		$response = $response->withStatus(501, 'UserController::logoutUser not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'UserController::logoutUser not implemented');
 	}
 
 	/**
@@ -189,12 +187,13 @@ class UserController {
 	 * @return Response
 	 */
 	public function updateUser(Request $request, Response $response, array $args) {
+		/** @var string $username */
 		$username = $args['username'];
+		/** @var User $user */
 		$user = new User($request->getParsedBody());
 
 		//TODO Method updateUser not implemented
-		$response = $response->withStatus(501, 'UserController::updateUser not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'UserController::updateUser not implemented');
 	}
 }

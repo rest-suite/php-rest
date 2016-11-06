@@ -47,12 +47,12 @@ class StoreController {
 	 * @return Response
 	 */
 	public function deleteOrder(Request $request, Response $response, array $args) {
+		/** @var int $orderId */
 		$orderId = $args['orderId'];
 
 		//TODO Method deleteOrder not implemented
-		$response = $response->withStatus(501, 'StoreController::deleteOrder not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'StoreController::deleteOrder not implemented');
 	}
 
 	/**
@@ -69,9 +69,8 @@ class StoreController {
 	 */
 	public function getInventory(Request $request, Response $response, array $args) {
 		//TODO Method getInventory not implemented
-		$response = $response->withStatus(501, 'StoreController::getInventory not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'StoreController::getInventory not implemented');
 	}
 
 	/**
@@ -90,12 +89,12 @@ class StoreController {
 	 * @return Response
 	 */
 	public function getOrderById(Request $request, Response $response, array $args) {
+		/** @var int $orderId */
 		$orderId = $args['orderId'];
 
 		//TODO Method getOrderById not implemented
-		$response = $response->withStatus(501, 'StoreController::getOrderById not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'StoreController::getOrderById not implemented');
 	}
 
 	/**
@@ -111,11 +110,11 @@ class StoreController {
 	 * @return Response
 	 */
 	public function placeOrder(Request $request, Response $response, array $args) {
+		/** @var Order $order */
 		$order = new Order($request->getParsedBody());
 
 		//TODO Method placeOrder not implemented
-		$response = $response->withStatus(501, 'StoreController::placeOrder not implemented');
 
-		return $response;
+		return $response->withStatus(501, 'StoreController::placeOrder not implemented');
 	}
 }
