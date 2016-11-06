@@ -16,9 +16,9 @@ In `composer.json`
   }
 }
 ````
-### Important notice
+### ~~Important notice~~
 While waiting for some [PR](https://github.com/gossi/swagger/pull/11) to `gossy/swagger`, 
-repository section need to be added to `composer.json`  
+repository section need to be added to `composer.json`   (auto generated and updated)
 ````json
 {
   "repositories": [

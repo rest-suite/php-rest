@@ -149,6 +149,7 @@ class Builder {
 
             return;
         }
+        $origin = file_exists($path) ? json_decode(file_get_contents($path), true) : [];
         $ns = explode('\\', $this->options[self::OPT_NAMESPACE]);
         $vendor = array_shift($ns);
         $json = [
@@ -177,7 +178,12 @@ class Builder {
                 ]
             ]
         ];
+        $json = array_merge($origin, $json);
         file_put_contents($path, json_encode($json, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-        $this->output->writeln("<info>composer.json created</info>");
+        if($json != $origin) {
+            $this->output->writeln("<info>composer.json ".($origin == [] ? 'created' : 'updated')."</info>");
+        } else {
+            $this->output->writeln("composer.json is up to date");
+        }
     }
 }
