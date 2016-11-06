@@ -44,6 +44,10 @@ class ModelGenerator {
         foreach($defs as $name => $def) {
             if(isset($this->models[$name])) continue;
             if($def->getType() != 'object') continue;
+            var_dump($def->getExtensions()->toArray());
+            if($def->getExtensions()->has('export') && !$def->getExtensions()->get('export', true)) {
+                continue;
+            }
             $ns = $this->namespace.'\\ApiModels';
             $model = new PhpClass($name);
             $model

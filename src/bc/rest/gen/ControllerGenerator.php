@@ -165,7 +165,9 @@ class ControllerGenerator {
             /** @var Parameter $param */
             foreach($params as $param) {
                 $name = $param->getName();
-
+                if($param->getExtensions()->has('export') && !$param->getExtensions()->get('export', true)) {
+                    continue;
+                }
                 if(isset($result[$name])) continue;
                 $r = [];
                 switch($param->getIn()) {

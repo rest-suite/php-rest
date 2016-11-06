@@ -28,6 +28,17 @@ definitions:
       flag:
         type: boolean
         default: true
+  NotExported:
+    type: object
+    description: not exported definition
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+      content:
+        type: string
+    x-export: false
   Error:
     type: object
     description: error message
