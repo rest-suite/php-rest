@@ -15,6 +15,9 @@ use Slim\Http\Response;
  */
 class Bootstrap {
 
+	const BAD_HTTP_CODES = [400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411,
+	                            412, 413, 414, 415, 416, 417, 500, 501, 502, 503, 504, 505];
+
 	/**
 	 * Slim application
 	 * 
@@ -46,6 +49,9 @@ class Bootstrap {
 		try {
 		    /** @var Response $response */
 		    $response = $next($request, $response);
+		    if(in_array($response->getStatusCode(), self::BAD_HTTP_CODES)) {
+		        throw new \HttpException("Generic error", $response->getStatusCode());
+		    }
 		}
 		catch(\Exception $e) {
 		    $json = [
@@ -55,10 +61,7 @@ class Bootstrap {
 		            ];
 		    return $response
 		        ->withStatus(
-		            in_array($e->getCode(), 
-		                    [400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411,
-		                    412, 413, 414, 415, 416, 417, 501, 502, 503, 504, 505]) 
-		                 ? $e->getCode() : 500)
+		            in_array($e->getCode(), self::BAD_HTTP_CODES) ? $e->getCode() : 500)
 		        ->withJson($json);
 		}
 		return $response->withStatus(204, 'Request processed');

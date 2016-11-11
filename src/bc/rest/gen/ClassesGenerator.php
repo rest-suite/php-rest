@@ -3,6 +3,7 @@
 namespace bc\rest\gen;
 
 use gossi\codegen\model\PhpClass;
+use gossi\codegen\model\PhpConstant;
 use gossi\codegen\model\PhpMethod;
 use gossi\codegen\model\PhpParameter;
 use gossi\codegen\model\PhpProperty;
@@ -101,6 +102,9 @@ class ClassesGenerator {
             ->setDescription('Class Bootstrap')
             ->setLongDescription('Creating routes and starting application')
             ->setDocblock(Docblock::create()->appendTag(TagFactory::create('package', $this->namespace)))
+            ->setConstant('BAD_HTTP_CODES',
+                          '[400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411,
+                            412, 413, 414, 415, 416, 417, 500, 501, 502, 503, 504, 505]', true)
             ->setProperty(PhpProperty::create('app')
                                      ->setType('App')
                                      ->setDescription('Slim application')
@@ -199,6 +203,9 @@ class ClassesGenerator {
 try {
     /** @var Response \$response */
     \$response = \$next(\$request, \$response);
+    if(in_array(\$response->getStatusCode(), self::BAD_HTTP_CODES)) {
+        throw new \HttpException("Generic error", \$response->getStatusCode());
+    }
 }
 catch(\\Exception \$e) {
     \$json = [
@@ -208,10 +215,7 @@ catch(\\Exception \$e) {
             ];
     return \$response
         ->withStatus(
-            in_array(\$e->getCode(), 
-                    [400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411,
-                    412, 413, 414, 415, 416, 417, 501, 502, 503, 504, 505]) 
-                 ? \$e->getCode() : 500)
+            in_array(\$e->getCode(), self::BAD_HTTP_CODES) ? \$e->getCode() : 500)
         ->withJson(\$json);
 }
 return \$response->withStatus(204, 'Request processed');
