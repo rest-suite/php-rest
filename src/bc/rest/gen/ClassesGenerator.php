@@ -3,7 +3,6 @@
 namespace bc\rest\gen;
 
 use gossi\codegen\model\PhpClass;
-use gossi\codegen\model\PhpConstant;
 use gossi\codegen\model\PhpMethod;
 use gossi\codegen\model\PhpParameter;
 use gossi\codegen\model\PhpProperty;
@@ -13,7 +12,6 @@ use gossi\swagger\Operation;
 use gossi\swagger\Parameter;
 use gossi\swagger\Path;
 use gossi\swagger\Swagger;
-use Slim\Http\UploadedFile;
 use Symfony\Component\Yaml\Yaml;
 
 class ClassesGenerator {
@@ -96,7 +94,6 @@ class ClassesGenerator {
         $bootstrap = new PhpClass('Bootstrap');
         $bootstrap
             ->setNamespace($this->namespace)
-            ->addUseStatement('HttpException')
             ->addUseStatement('Slim\\App')
             ->addUseStatement('Slim\\Http\\Request')
             ->addUseStatement('Slim\\Http\\Response')
@@ -205,7 +202,7 @@ try {
     /** @var Response \$response */
     \$response = \$next(\$request, \$response);
     if(in_array(\$response->getStatusCode(), self::BAD_HTTP_CODES)) {
-        throw new HttpException("Generic error", \$response->getStatusCode());
+        throw new \Exception("Generic error", \$response->getStatusCode());
     }
 }
 catch(\\Exception \$e) {
