@@ -1,11 +1,16 @@
 {
-  "name": "bc/php-rest",
+  "name": "rest-suite/generator",
   "license": "MIT",
   "authors": [
     {
       "name": "inpu",
       "email": "theinpu@gmail.com",
       "homepage": "https://github.com/theinpu"
+    },
+    {
+      "name": "iD",
+      "email": "msgexec@gmail.com",
+      "homepage": "https://github.com/inhuman"
     }
   ],
   "require": {
