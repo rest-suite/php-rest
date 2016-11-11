@@ -202,7 +202,7 @@ try {
     /** @var Response \$response */
     \$response = \$next(\$request, \$response);
     if(in_array(\$response->getStatusCode(), self::BAD_HTTP_CODES)) {
-        throw new \Exception("Generic error", \$response->getStatusCode());
+        throw new \Exception(\$response->getReasonPhrase(), \$response->getStatusCode());
     }
 }
 catch(\\Exception \$e) {
