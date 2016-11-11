@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/theinpu/php-rest.svg?branch=master)](https://travis-ci.org/theinpu/php-rest)
+[![Build Status](https://travis-ci.org/rest-suite/generator.svg?branch=master)](https://travis-ci.org/rest-suite/generator)
 
 # php-rest (work in progress)
 RESTapi server generator based on [openapi specs](https://openapis.org/) 
@@ -6,13 +6,13 @@ and [slim framework](http://www.slimframework.com/)
 
 # Install
 Command line:
-`composer require bc/php-rest`  
+`composer require rest-suite/generator`  
   -or-  
 In `composer.json`    
 ````json
 {
   "require-dev": {
-    "bc/php-rest" : "dev-master"
+    "rest-suite/generator" : "dev-master"
   }
 }
 ````
@@ -60,11 +60,11 @@ TODO: Two-way sync (schema <=> code) with user-code preservation
 # Examples
 Examples of generated code:
 
-* Simple api - [specs](https://github.com/theinpu/php-rest/blob/master/tests/_data/swagger.yml),
-[code](https://github.com/theinpu/php-rest/tree/master/examples/simple/)  
+* Simple api - [specs](https://github.com/rest-suite/generator/blob/master/tests/_data/swagger.yml),
+[code](https://github.com/rest-suite/generator/tree/master/examples/simple/)  
 
-* Pet Shop - [specs](https://github.com/theinpu/php-rest/blob/master/tests/_data/petshop.yml),
-[code](https://github.com/theinpu/php-rest/tree/master/examples/petshop/)
+* Pet Shop - [specs](https://github.com/rest-suite/generator/blob/master/tests/_data/petshop.yml),
+[code](https://github.com/rest-suite/generator/tree/master/examples/petshop/)
 
 # Documentation
 TODO
