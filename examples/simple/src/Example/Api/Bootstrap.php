@@ -2,7 +2,6 @@
 
 namespace Example\Api;
 
-use HttpException;
 use Slim\App;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -51,7 +50,7 @@ class Bootstrap {
 		    /** @var Response $response */
 		    $response = $next($request, $response);
 		    if(in_array($response->getStatusCode(), self::BAD_HTTP_CODES)) {
-		        throw new HttpException("Generic error", $response->getStatusCode());
+		        throw new \Exception("Generic error", $response->getStatusCode());
 		    }
 		}
 		catch(\Exception $e) {
