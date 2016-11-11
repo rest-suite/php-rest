@@ -96,6 +96,7 @@ class ClassesGenerator {
         $bootstrap = new PhpClass('Bootstrap');
         $bootstrap
             ->setNamespace($this->namespace)
+            ->addUseStatement('HttpException')
             ->addUseStatement('Slim\\App')
             ->addUseStatement('Slim\\Http\\Request')
             ->addUseStatement('Slim\\Http\\Response')
@@ -204,7 +205,7 @@ try {
     /** @var Response \$response */
     \$response = \$next(\$request, \$response);
     if(in_array(\$response->getStatusCode(), self::BAD_HTTP_CODES)) {
-        throw new \HttpException("Generic error", \$response->getStatusCode());
+        throw new HttpException("Generic error", \$response->getStatusCode());
     }
 }
 catch(\\Exception \$e) {
