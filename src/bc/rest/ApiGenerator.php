@@ -11,6 +11,7 @@ class ApiGenerator extends Application {
         parent::__construct($name, $version);
         
         $this->add(new GenerateCommand());
+        $this->add(new ModelsCommand());
     }
     
 }
