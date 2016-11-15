@@ -47,7 +47,7 @@ class ModelGenerator {
             if($def->getExtensions()->has('export') && !$def->getExtensions()->get('export', true)) {
                 continue;
             }
-            $ns = $this->namespace.'\\ApiModels';
+            $ns = $this->namespace.'\\Models';
             $model = new PhpClass($name);
             $model
                 ->setNamespace($ns)

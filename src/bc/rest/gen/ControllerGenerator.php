@@ -144,7 +144,7 @@ class ControllerGenerator {
                         if($this->swagger->getDefinitions()->has($refName)) {
                             $doc->appendTag(
                                 TagFactory::create('api-response:'.$r,
-                                                   $this->namespace.'\\ApiModels\\'.$refName.' '.$response->getDescription()));
+                                                   $this->namespace.'\\Models\\'.$refName.' '.$response->getDescription()));
                         }
                         else {
                             $doc->appendTag(
@@ -203,7 +203,7 @@ class ControllerGenerator {
                                 $r['param']->setType($refName);
                                 $r['tag'] = TagFactory::create('internal', $model);
                                 $r['body'] = '$'.lcfirst($refName).' = new '.$refName.'($request->getParsedBody());';
-                                $r['usage'] = $this->namespace.'\\ApiModels\\'.$refName;
+                                $r['usage'] = $this->namespace.'\\Models\\'.$refName;
                                 $result[lcfirst($refName)] = $r;
                             }
                         }

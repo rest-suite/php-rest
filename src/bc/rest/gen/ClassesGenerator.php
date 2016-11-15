@@ -46,18 +46,38 @@ class ClassesGenerator {
     private $bootstrap;
 
     /**
+     * @var DataMapGenerator
+     */
+    private $dataMaps;
+
+    /**
+     * @var FactoryGenerator
+     */
+    private $factories;
+
+    /**
+     * @var BuilderGenerator
+     */
+    private $builders;
+    
+    /**
      * ClassesGenerator constructor.
      *
      * @param string $swaggerFile
      * @param string $namespace
      */
     public function __construct($swaggerFile, $namespace) {
-        $yml = file_get_contents($swaggerFile);
-        $swagger = Yaml::parse($yml);
-        $this->swagger = new Swagger($swagger);
-        $this->namespace = rtrim($namespace, '\\');
-        $this->models = new ModelGenerator($this->swagger, $this->namespace);
-        $this->configs = [];
+        
+        $yml                    = file_get_contents($swaggerFile);
+        $swagger                = Yaml::parse($yml);
+        $this->swagger          = new Swagger($swagger);
+        $this->namespace        = rtrim($namespace, '\\');
+        $this->models           = new ModelGenerator($this->swagger, $this->namespace);
+        $this->dataMaps         = new DataMapGenerator($this->swagger, $this->namespace);
+        $this->factories        = new FactoryGenerator($this->swagger, $this->namespace);
+        $this->builders         = new BuilderGenerator($this->swagger, $this->namespace);
+        $this->configs          = [];
+        
         $this->createPathGroups();
         $this->controllers = new ControllerGenerator($this->swagger, $this->namespace, $this->groups);
         $this->createBootstrap();
@@ -269,5 +289,27 @@ BODY
      */
     public function getConfigs() {
         return $this->configs;
+    }
+
+    /**
+     * @return PhpClass[]
+     */
+    public function getDataMaps(){
+        return $this->dataMaps->getAll();
+    }
+
+    /**
+     * @return PhpClass[]
+     */
+    public function getFactories(){
+        return $this->factories->getAll();
+    }
+
+
+    /**
+     * @return PhpClass[]
+     */
+    public function getBuilders(){
+        return $this->builders->getAll();
     }
 }

@@ -58,6 +58,9 @@ class Builder {
 
         $this->writeControllers();
         $this->writeModels();
+        $this->writeBuilders();
+        $this->writeFactories();
+        $this->writeDataMaps();
         $this->writeConfigs();
         $this->writeTests();
         $this->writeComposerJson();
@@ -120,6 +123,31 @@ class Builder {
         }
     }
 
+    private function writeDataMaps(){
+        foreach($this->classes->getDataMaps() as $dataMap) {
+            if($this->writeClass($dataMap)) {
+                $this->output->writeln('<info>'.$dataMap->getName()." created</info>");
+            }
+        }
+    }
+    
+    private function writeFactories(){
+
+        foreach($this->classes->getFactories() as $factory) {
+            if($this->writeClass($factory)) {
+                $this->output->writeln('<info>'.$factory->getName()." created</info>");
+            }
+        }
+    }
+    
+    private function writeBuilders(){
+        foreach($this->classes->getBuilders() as $builder) {
+            if($this->writeClass($builder)) {
+                $this->output->writeln('<info>'.$builder->getName()." created</info>");
+            }
+        }
+    }
+
     private function writeConfigs() {
         if($this->options[self::OPT_ALL] || $this->options[self::OPT_SETTINGS]) {
             $configPath = $this->options[self::OPT_OUTPUT_PATH].DIRECTORY_SEPARATOR.'config';
@@ -158,6 +186,7 @@ class Builder {
             'minimum-stability' => 'dev',
             'require'           => [
                 'slim/slim' => '3.5.0',
+                'bc/model'  => '>=0.1.2.5'
             ],
             'require-dev'       => [
                 'bc/php-rest'             => '*',
