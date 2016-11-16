@@ -61,6 +61,7 @@ class Builder {
         $this->writeBuilders();
         $this->writeFactories();
         $this->writeDataMaps();
+        $this->writeSql();
         $this->writeConfigs();
         $this->writeTests();
         $this->writeComposerJson();
@@ -100,6 +101,32 @@ class Builder {
         }
 
         file_put_contents($fileName, "<?php\n\n".$this->gen->generate($class));
+
+        return true;
+    }
+
+
+    private function writeSql(){
+        foreach($this->classes->getSqls() as $sql) {
+            if($this->writeSqlFile($sql)) {
+                $this->output->writeln('<info>'.$sql['name']." sql created</info>");
+            }
+        }
+    }
+
+    private function writeSqlFile($sql){
+        $path = $this->srcPath.$this->getPathFromNamespace($sql['nameSpace']);
+        if(!file_exists($path)) {
+            mkdir($path, 0755, true);
+        }
+        $fileName = $path.DIRECTORY_SEPARATOR.$sql['name'].'.sql';
+        if(file_exists($fileName) && !$this->options[self::OPT_OVERRIDE]) {
+            $this->output->writeln("<error>File '$fileName' exists</error>");
+
+            return false;
+        }
+
+        file_put_contents($fileName, $sql['content']);
 
         return true;
     }

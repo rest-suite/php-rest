@@ -59,6 +59,11 @@ class ClassesGenerator {
      * @var BuilderGenerator
      */
     private $builders;
+
+    /**
+     * @var SqlGenerator
+     */
+    private $sqls;
     
     /**
      * ClassesGenerator constructor.
@@ -76,6 +81,7 @@ class ClassesGenerator {
         $this->dataMaps         = new DataMapGenerator($this->swagger, $this->namespace);
         $this->factories        = new FactoryGenerator($this->swagger, $this->namespace);
         $this->builders         = new BuilderGenerator($this->swagger, $this->namespace);
+        $this->sqls             = new SqlGenerator($this->swagger, $this->namespace);
         $this->configs          = [];
         
         $this->createPathGroups();
@@ -311,5 +317,10 @@ BODY
      */
     public function getBuilders(){
         return $this->builders->getAll();
+    }
+    
+    
+    public function getSqls(){
+        return $this->sqls->getAll();
     }
 }
