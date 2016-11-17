@@ -30,21 +30,40 @@ class SqlGenerator{
         $defs = $this->swagger->getDefinitions();
 
         $this->sqls = [];
-        
+
+
         /** @var Schema $def */
         foreach ($defs as $name => $def) {
             if(isset($this->sqls[$name])) continue;
             if($def->getType() != 'object') continue;
+            if($this->isSimpleModel($def)) continue;
 
             $sql['content'] = $this->createSql($def, $name);
             $sql['nameSpace'] = $this->namespace.'\\Sqls';
             $sql['name'] = $name;
-            
-            
+
             $this->sqls[] = $sql;
         }
     }
 
+    /**
+     * @param Schema $def
+     * @return bool
+     */
+    private function isSimpleModel($def){
+
+        foreach ($def->getProperties() as $name => $property) {
+            /** @var Map $extensions */
+            $extensions = $property->getExtensions();
+
+            /** @var ArrayList $sql */
+            $sql = $extensions->get('sql');
+            
+            if(is_null($sql)) return true;
+        }
+
+        return false;
+    }
 
     private function createSql($def, $name){
         

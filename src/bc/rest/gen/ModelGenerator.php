@@ -63,11 +63,11 @@ class ModelGenerator {
             $model = $this->models[$name];
             $this->createProperties($def, $model);
 
-            $construct = PhpMethod::create('__construct');
-            $construct->setDescription($model->getName().' constructor')
-                      ->addParameter(
-                          PhpParameter::create('data')->setType('array')->setDescription('Initial object data')
-                      );
+//            $construct = PhpMethod::create('__construct');
+//            $construct->setDescription($model->getName().' constructor')
+//                      ->addParameter(
+//                          PhpParameter::create('data')->setType('array')->setDescription('Initial object data')
+//                      );
 
             $checks = [];
             $body = [];
@@ -92,11 +92,11 @@ class ModelGenerator {
             $body = array_merge($checks, $body);
 
             if(count($unchecked) > 0) $body[] = '';
-            $body = array_merge($body, $unchecked);
+//            $body = array_merge($body, $unchecked);
 
-            $construct->setBody(implode("\n", $body));
+//            $construct->setBody(implode("\n", $body));
 
-            $model->setMethod($construct);
+//            $model->setMethod($construct);
         }
     }
 

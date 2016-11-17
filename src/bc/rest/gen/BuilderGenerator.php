@@ -11,6 +11,7 @@ use gossi\docblock\tags\TagFactory;
 use gossi\swagger\Schema;
 use gossi\swagger\Swagger;
 use phootwork\collection\ArrayList;
+use phootwork\collection\Map;
 
 class BuilderGenerator{
 
@@ -38,7 +39,7 @@ class BuilderGenerator{
         foreach ($defs as $name => $def) {
             if(isset($this->builders[$name])) continue;
             if($def->getType() != 'object') continue;
-            
+
             $ns = $this->namespace.'\\Builders';
 
             $builder = new PhpClassWrapper($name . 'Builder');
@@ -65,6 +66,7 @@ class BuilderGenerator{
         }
     }
 
+
     /**
      * @param PhpClassWrapper $builder
      * @return PhpClassWrapper
@@ -83,7 +85,7 @@ class BuilderGenerator{
             /** @var ArrayList $required */
             $required = $builder->getDef()->getRequired();
             
-            if(in_array($name, $required->toArray())){
+            if((!is_null($required)) && in_array($name, $required->toArray())){
 
                 $body .= "if(is_null(\$this->" . $name . ")){\n";
                 $body .= "\tthrow new \\InvalidArgumentException('Need to set " . $name." ');\n}\n";

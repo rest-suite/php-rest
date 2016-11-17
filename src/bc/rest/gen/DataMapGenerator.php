@@ -8,6 +8,8 @@ use gossi\docblock\Docblock;
 use gossi\docblock\tags\TagFactory;
 use gossi\swagger\Schema;
 use gossi\swagger\Swagger;
+use phootwork\collection\ArrayList;
+use phootwork\collection\Map;
 
 class DataMapGenerator {
     
@@ -33,7 +35,8 @@ class DataMapGenerator {
         foreach ($defs as $name => $def) {
             if(isset($this->dataMaps[$name])) continue;
             if($def->getType() != 'object') continue;
-
+            if($this->isSimpleModel($def)) continue;
+            
             $ns = $this->namespace.'\\DataMaps';
 
             $dataMap = new PhpClassWrapper($name . 'DataMap');
@@ -55,6 +58,25 @@ class DataMapGenerator {
 
             $this->dataMaps[$name] = $dataMap;
         }
+    }
+
+    /**
+     * @param Schema $def
+     * @return bool
+     */
+    private function isSimpleModel($def){
+
+        foreach ($def->getProperties() as $name => $property) {
+            /** @var Map $extensions */
+            $extensions = $property->getExtensions();
+
+            /** @var ArrayList $sql */
+            $sql = $extensions->get('sql');
+
+            if(is_null($sql)) return true;
+        }
+
+        return false;
     }
 
     /**
