@@ -203,6 +203,9 @@ class ControllerGenerator {
                                 $r['param']->setType($refName);
                                 $r['tag'] = TagFactory::create('internal', $model);
                                 $r['body'] = '$'.lcfirst($refName).' = new '.$refName.'($request->getParsedBody());';
+                                //TODO: implenent create object throw builder
+
+
                                 $r['usage'] = $this->namespace.'\\Models\\'.$refName;
                                 $result[lcfirst($refName)] = $r;
                             }

@@ -128,6 +128,9 @@ class BuilderGenerator{
         $createMethod
             ->setType($modelName)
             ->setBody($body)
+            ->setStatic(true)
+            
+            
         ;
         
         $builder->setMethod($createMethod);
