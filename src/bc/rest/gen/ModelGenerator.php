@@ -51,6 +51,9 @@ class ModelGenerator {
             $model = new PhpClass($name);
             $model
                 ->setNamespace($ns)
+                ->setUseStatements([
+                    'bc\\model\\Model'
+                ])
                 ->setParentClassName('bc\\model\\Model')
                 ->setLongDescription($def->getDescription())
                 ->setDescription('Class '.$name)
