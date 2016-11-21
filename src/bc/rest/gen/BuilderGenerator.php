@@ -46,12 +46,14 @@ class BuilderGenerator{
             $builder
                 ->setNamespace($ns)
                 ->setLongDescription($def->getDescription())
+                ->addUseStatement('bc\\model\\IBuilder')
+                ->addUseStatement($name . '\\Models\\' . $name)
                 ->setDescription('Class '.$name . 'Builder')
                 ->setDocblock(
                     Docblock::create()->appendTag(TagFactory::create('package', $ns))
 
                 )
-                ->setParentClassName('IBuilder')
+                ->addInterface('IBuilder')
                 ->setDef($def)
                 ->setTableName($name)
                 
@@ -94,13 +96,31 @@ class BuilderGenerator{
         }
         
         $body        .= "\$item = new " . $modelName . "(); \n";
-    
+
+
+        $dateTimeAdded = false;
         /** @var Schema $item */
         foreach ($builder->getDef()->getProperties() as $name => $item) {
             if ($name == 'id') continue;
+            
+            if(($name == 'created_at') || ($name == 'updated_at')){
+                
+                if(!$dateTimeAdded){
+                    $body .= "\$date = new \\DateTime();\n";
+                    $body .= "\$date->setTimestamp(time());\n";
+                    $dateTimeAdded = true;
+                }
+                $body .= "\$item->set" .  ucfirst($name) . "(\$date->format('Y-m-d H:i:s'));\n";
+                                                
+                
+                continue;
+            }
+            
             $body .= "\$item->set" .  ucfirst($name) . "(\$this->". $name .");\n";
         }   
 
+            $body .= "\nreturn \$item;";
+        
             $buildMethod
             ->setType($modelName)
             ->setDocblock(Docblock::create()->appendTag(TagFactory::create('throws', '\InvalidArgumentException')))

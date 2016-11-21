@@ -43,6 +43,9 @@ class FactoryGenerator {
             $dataMap = new PhpClass($name . 'Factory');
             $dataMap
                 ->setNamespace($ns)
+                ->addUseStatement($name . '\\Models\\' .$name)
+                ->addUseStatement('bc\model\Factory')
+                ->addUseStatement($name . '\DataMaps\\' . $name . 'DataMap')
                 ->setLongDescription($def->getDescription())
                 ->setDescription('Class '.$name . 'Factory')
                 ->setDocblock(
@@ -52,6 +55,7 @@ class FactoryGenerator {
                         ->appendTag(TagFactory::create('method', $name . ' getAll()'))
                         ->appendTag(TagFactory::create('method', $name . ' getList($ids)'))
                         ->appendTag(TagFactory::create('method', $name . ' getPartial($offset, $count)'))
+                        ->appendTag(TagFactory::create('method', $name . 'DataMap getDataMap()'))
                 )
                 ->setParentClassName('Factory')
 

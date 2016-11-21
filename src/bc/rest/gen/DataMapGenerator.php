@@ -42,7 +42,8 @@ class DataMapGenerator {
             $dataMap = new PhpClassWrapper($name . 'DataMap');
             $dataMap
                 ->setNamespace($ns)
-                ->addUseStatement('Models\\' .$name)
+                ->addUseStatement($name . '\\Models\\' .$name)
+                ->addUseStatement('bc\Models\DataMap')
                 ->setLongDescription($def->getDescription())
                 ->setDescription('Class '.$name . 'DataMap')
                 ->setDocblock(Docblock::create()->appendTag(TagFactory::create('package', $ns)))
@@ -93,18 +94,20 @@ class DataMapGenerator {
         $findOneSql = "SELECT " . $fields . " FROM `" . $name . "` WHERE `id`=:id";
         $findAllSql = "SELECT " . $fields . " FROM `" . $name . '`';
         $findByIdsSql = "SELECT " . $fields . " FROM `". $name ."` WHERE `id` IN (:ids)";
+        $deleteSql = "DELETE FROM `" . $name . "` where `id`=:id";
         $countSql = "SELECT count(`id`) FROM `". $name .'`';
         $insertSql = $this->generateInsertSql($dataMap);
         $updateSql = $this->generateUpdateSql($dataMap);
 
-        $code = "\$this->className = '" . 'Models\\\\'.  ucfirst(strtolower($dataMap->getTableName())) . "';\n";
+        $code = "\$this->className = '" . $name . '\\\\Models\\\\'.  ucfirst(strtolower($dataMap->getTableName())) . "';\n";
         $code .= "\$this->findOneSql = '$findOneSql';\n";
         $code .= "\$this->findAllSql = '$findAllSql';\n";
         $code .= "\$this->findByIdsSql = '$findByIdsSql';\n";
         $code .= "\$this->countSql = '" . $countSql . "';\n";
         $code .= "\$this->insertSql = '" . $insertSql . "';\n";
         $code .= "\$this->updateSql = '" . $updateSql . "';\n";
-
+        $code .= "\$this->deleteSql = '" . $deleteSql ."';\n";
+        
         $initSql
             ->setBody($code)
             ->setVisibility('protected')
@@ -149,7 +152,9 @@ class DataMapGenerator {
         $code = "return [ \n";
 
         foreach ($dataMap->getDef()->getProperties()->toArray() as $name => $item) {
-            $code .= "\t':" . $name . "' => \$item->get" . ucfirst(strtolower($name)) . "()," . "\n";
+            if($name == 'id') continue;
+            
+            $code .= "\t':" . $name . "' => \$item->get" . ucfirst($name) . "()," . "\n";
         }
 
         $code .= '];';
@@ -182,7 +187,8 @@ class DataMapGenerator {
         $code = "return [ \n";
 
         foreach ($dataMap->getDef()->getProperties()->toArray() as $name => $item) {
-            $code .= "\t':" . $name . "' => \$item->get" . ucfirst(strtolower($name)) . "()," . "\n";
+            if($name == 'id') continue;
+            $code .= "\t':" . $name . "' => \$item->get" . ucfirst($name) . "()," . "\n";
         }
        
         $code .= '];';

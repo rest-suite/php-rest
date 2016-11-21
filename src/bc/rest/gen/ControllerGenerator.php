@@ -9,12 +9,15 @@ use gossi\codegen\model\PhpProperty;
 use gossi\docblock\Docblock;
 use gossi\docblock\tags\ReturnTag;
 use gossi\docblock\tags\TagFactory;
+use gossi\formatter\Formatter;
 use gossi\swagger\collections\Parameters;
 use gossi\swagger\Operation;
 use gossi\swagger\Parameter;
 use gossi\swagger\Path;
 use gossi\swagger\Response;
+use gossi\swagger\Schema;
 use gossi\swagger\Swagger;
+use phootwork\collection\Map;
 
 class ControllerGenerator {
 
@@ -47,6 +50,19 @@ class ControllerGenerator {
         $this->createControllers();
     }
 
+    /**
+     * @param Operation $operation
+     * @return bool 
+     */
+    private function isCrud($operation){
+        
+        /** @var Map $extensions */
+        $extensions = $operation->getExtensions();
+        $isCrud = $extensions->get('crud');
+        
+        return !is_null($isCrud) ? $isCrud : false;
+    }
+    
     private function createControllers() {
 
         /** @var PhpClass[] $controllers */
@@ -56,14 +72,15 @@ class ControllerGenerator {
             if(!isset($controllers[$name])) {
                 $path = rtrim($this->swagger->getBasePath(), '/').'/'.$group;
                 $controllers[$name] = new PhpClass($name);
+                
+                $useStatements = [
+                    'Slim\\Container',
+                    'Slim\\Http\\Request',
+                    'Slim\\Http\\Response'
+                ];
+                
                 $controllers[$name]
                     ->setNamespace($this->namespace.'\\Controllers')
-                    ->setUseStatements(
-                        [
-                            'Slim\\Container',
-                            'Slim\\Http\\Request',
-                            'Slim\\Http\\Response'
-                        ])
                     ->setDocblock(
                         Docblock::create()
                                 ->appendTag(TagFactory::create('package', $controllers[$name]->getNamespace())))
@@ -83,25 +100,30 @@ class ControllerGenerator {
                                  ->setDescription($controllers[$name]->getName().' constructor')
                                  ->setBody('$this->ci = $ci;'));
             }
-
+            
             foreach($info as $item) {
+                            
                 /** @var Operation $op */
                 $op = $item['operation'];
                 /** @var Path $path */
                 $path = $item['path'];
+                
                 if(!empty($op->getOperationId())) {
                     $method = PhpMethod::create($op->getOperationId());
 
                     $doc = Docblock::create()
                                    ->appendTag(ReturnTag::create()->setType('Response'))
                                    ->appendTag(TagFactory::create('api', strtoupper($item['method']).' '.$path->getPath()));
-
+                    
                     $body = [];
                     $uses = [];
 
                     $internal = $this->parseParams($path->getParameters());
                     $internal = array_merge($internal, $this->parseParams($op->getParameters()));
 
+                    
+                    //TODO : finish generate crud
+                    
                     $internalInit = [];
 
                     $useFiles = false;
@@ -134,6 +156,8 @@ class ControllerGenerator {
 
                     $responses = $op->getResponses();
 
+                    
+                    $model = null;
                     /**
                      * @var string $r
                      * @var Response $response
@@ -142,6 +166,10 @@ class ControllerGenerator {
                         $ref = explode('/', $response->getSchema()->getRef());
                         $refName = $ref[count($ref) - 1];
                         if($this->swagger->getDefinitions()->has($refName)) {
+                            
+                            $model = $this->swagger->getDefinitions()->get($refName);
+                            $model->setTitle($refName);
+                            
                             $doc->appendTag(
                                 TagFactory::create('api-response:'.$r,
                                                    $this->namespace.'\\Models\\'.$refName.' '.$response->getDescription()));
@@ -160,12 +188,30 @@ class ControllerGenerator {
                     $method->addParameter(PhpParameter::create('response')->setType('Response'));
                     $method->addParameter(PhpParameter::create('args')->setType('array'));
 
+
+                    //TODO: switch method 
+                    if($this->isCrud($op)){
+                        $body = array_merge($body, $this->addCrudCode($item['method'], $model));
+                        
+                        if(gettype($model) == 'object'){
+                           
+                            $controllers[$name]->setUseStatements(array_merge($useStatements, [
+                                $model->getTitle() . '\\Builders\\' . $model->getTitle() . 'Builder',
+                                $model->getTitle() . '\\DataMaps\\' . $model->getTitle() . 'DataMap',
+                                $model->getTitle() . '\\Factories\\' . $model->getTitle() . 'Factory',
+                            ]));
+
+                        }
+                    }
+
+
+
                     $body = $this->appendToDo($body, $method);
 
                     $body[] = '';
                     $body[] = "return \$response->withStatus(501, ".
                               "'{$controllers[$name]->getName()}::{$method->getName()} not implemented');";
-
+                    
                     $method->setBody(implode("\n", $body));
 
                     $controllers[$name]->setMethod($method);
@@ -176,6 +222,36 @@ class ControllerGenerator {
         $this->controllers = $controllers;
     }
 
+    private function addCrudCode($methodType, $op){
+
+        $code = [];
+        
+        switch ($methodType){
+            case 'get':
+                $code = CrudGenerator::generate()->get($op);
+                break;
+
+            case 'post':
+                $code = CrudGenerator::generate()->post($op);
+                break;
+
+            case 'put':
+                $code = CrudGenerator::generate()->put($op);
+                break;
+
+            case 'delete':
+                $code =  CrudGenerator::generate()->delete($op);
+                break;
+
+            default:
+                $code[] = "//TODO: fix swagger.yml - can not generate crud for unknown method";
+                break;
+        }
+        
+        return $code;
+    }
+    
+    
     /**
      * @param Parameters $params
      *
@@ -202,7 +278,8 @@ class ControllerGenerator {
                                 $r['param'] = $param;
                                 $r['param']->setType($refName);
                                 $r['tag'] = TagFactory::create('internal', $model);
-                                $r['body'] = '$'.lcfirst($refName).' = new '.$refName.'($request->getParsedBody());';
+//                                $r['body'] = '$'.lcfirst($refName).' = new '.$refName.'($request->getParsedBody());';
+                                
                                 //TODO: implenent create object throw builder
 
 

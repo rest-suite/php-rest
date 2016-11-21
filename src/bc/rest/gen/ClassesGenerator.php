@@ -110,6 +110,7 @@ class ClassesGenerator {
                         'method'    => $method,
                         'operation' => $operation,
                         'path'      => $path,
+                        'model'     => ''
                     ];
                 }
             }
