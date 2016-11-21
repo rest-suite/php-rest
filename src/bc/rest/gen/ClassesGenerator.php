@@ -231,6 +231,7 @@ try {
     if(in_array(\$response->getStatusCode(), self::BAD_HTTP_CODES)) {
         throw new \Exception(\$response->getReasonPhrase(), \$response->getStatusCode());
     }
+    return \$response;
 }
 catch(\\Exception \$e) {
     \$json = [
@@ -243,7 +244,7 @@ catch(\\Exception \$e) {
             in_array(\$e->getCode(), self::BAD_HTTP_CODES) ? \$e->getCode() : 500)
         ->withJson(\$json);
 }
-return \$response->withStatus(204, 'Request processed');
+//return \$response->withStatus(204, 'Request processed');
 BODY
                      )
         );
