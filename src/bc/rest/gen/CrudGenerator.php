@@ -37,7 +37,7 @@ class CrudGenerator
 
         $code = [];
 
-        $code[] = "\n$".strtolower($schema->getTitle()) . ' = ' . $schema->getTitle() . 'Builder::create()';
+        $code[] = "\n$".lcfirst($schema->getTitle()) . ' = ' . $schema->getTitle() . 'Builder::create()';
 
         /** @var Schema $item */
         foreach ($schema->getProperties()->toArray() as $name => $item) {
@@ -47,7 +47,10 @@ class CrudGenerator
         $code[] = "\t->build();";
         
         $code[] = "\n\$factory = new " . $schema->getTitle() . "Factory(new " . $schema->getTitle() . 'DataMap());';
-        $code[] = "\$factory->save($" . strtolower($schema->getTitle()) . ");";
+        $code[] = "\$factory->save($" . lcfirst($schema->getTitle()) . ");";
+
+        $code[] = "\nreturn \$response->withJson($" . lcfirst($schema->getTitle()) . "->toArray());";
+
         return $code;
     }
     

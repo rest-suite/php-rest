@@ -202,15 +202,17 @@ class ControllerGenerator {
                             ]));
 
                         }
-                    }
-
-
-
+                    } else {
                     $body = $this->appendToDo($body, $method);
 
                     $body[] = '';
                     $body[] = "return \$response->withStatus(501, ".
                               "'{$controllers[$name]->getName()}::{$method->getName()} not implemented');";
+
+                    }
+
+
+
                     
                     $method->setBody(implode("\n", $body));
 
