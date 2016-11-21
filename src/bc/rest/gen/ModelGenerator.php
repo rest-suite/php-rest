@@ -54,10 +54,12 @@ class ModelGenerator {
                 ->setUseStatements([
                     'bc\\model\\Model'
                 ])
-                ->setParentClassName('bc\\model\\Model')
+                ->setParentClassName('Model')
                 ->setLongDescription($def->getDescription())
+                ->setMethod(new PhpMethod('getJSON'))
                 ->setDescription('Class '.$name)
                 ->setDocblock(Docblock::create()->appendTag(TagFactory::create('package', $ns)));
+
 
             $this->models[$name] = $model;
         }
