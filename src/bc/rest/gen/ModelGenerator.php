@@ -51,6 +51,7 @@ class ModelGenerator {
             $model = new PhpClass($name);
             $model
                 ->setNamespace($ns)
+                ->setParentClassName('bc\\model\\Model')
                 ->setLongDescription($def->getDescription())
                 ->setDescription('Class '.$name)
                 ->setDocblock(Docblock::create()->appendTag(TagFactory::create('package', $ns)));

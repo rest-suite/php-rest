@@ -43,7 +43,7 @@ class DataMapGenerator {
             $dataMap
                 ->setNamespace($ns)
                 ->addUseStatement($name . '\\Models\\' .$name)
-                ->addUseStatement('bc\Model\DataMap')
+                ->addUseStatement('bc\model\DataMap')
                 ->setLongDescription($def->getDescription())
                 ->setDescription('Class '.$name . 'DataMap')
                 ->setDocblock(Docblock::create()->appendTag(TagFactory::create('package', $ns)))
@@ -161,13 +161,14 @@ class DataMapGenerator {
 
         $item = new PhpParameter('item');
         $modelName = ucfirst(strtolower($dataMap->getTableName()));
-        $item->setType($modelName);
+//        $item->setType($modelName);
 
 
         $getInsertBindings
             ->setBody($code)
             ->addParameter($item)
             ->setType($modelName)
+            ->setDocblock(Docblock::create()->appendTag(TagFactory::create('param ' . $modelName, '$item')))
             ->setVisibility('protected')
             ->generateDocblock()
         ;
@@ -195,13 +196,14 @@ class DataMapGenerator {
         
         $item = new PhpParameter('item');
         $modelName = ucfirst(strtolower($dataMap->getTableName()));
-        $item->setType($modelName);
+//        $item->setType($modelName);
        
         
         $getUpdateBindings
             ->setBody($code)
             ->addParameter($item)
             ->setType($modelName)
+            ->setDocblock(Docblock::create()->appendTag(TagFactory::create('param ' . $modelName, '$item')))
             ->setVisibility('protected')
             ->generateDocblock()
         ;
