@@ -43,7 +43,7 @@ class DataMapGenerator {
             $dataMap
                 ->setNamespace($ns)
                 ->addUseStatement($name . '\\Models\\' .$name)
-                ->addUseStatement('bc\Models\DataMap')
+                ->addUseStatement('bc\Model\DataMap')
                 ->setLongDescription($def->getDescription())
                 ->setDescription('Class '.$name . 'DataMap')
                 ->setDocblock(Docblock::create()->appendTag(TagFactory::create('package', $ns)))
