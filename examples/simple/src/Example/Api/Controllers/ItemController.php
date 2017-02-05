@@ -3,7 +3,7 @@
 namespace Example\Api\Controllers;
 
 use Example\Api\ApiModels\Item;
-use Slim\Container;
+use Rest\Lib\AbstractController;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -14,32 +14,16 @@ use Slim\Http\Response;
  * 
  * @package Example\Api\Controllers
  */
-class ItemController {
-
-	/**
-	 * Dependency injection container
-	 * 
-	 * @var Container
-	 */
-	private $ci;
-
-	/**
-	 * ItemController constructor
-	 * 
-	 * @param Container $ci
-	 */
-	public function __construct(Container $ci) {
-		$this->ci = $ci;
-	}
+class ItemController extends AbstractController {
 
 	/**
 	 * add new item
 	 * 
-	 * @api-response:default Example\Api\ApiModels\Error generic error
-	 * @api-response:400 Example\Api\ApiModels\Error invalid object
-	 * @api-response:201 Example\Api\ApiModels\Item Created
 	 * @api POST /item
 	 * @internal Item $item
+	 * @api-response:201 Example\Api\ApiModels\Item Created
+	 * @api-response:400 Example\Api\ApiModels\Error invalid object
+	 * @api-response:default Example\Api\ApiModels\Error generic error
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args
@@ -57,11 +41,11 @@ class ItemController {
 	/**
 	 * delete item
 	 * 
-	 * @api-response:default Example\Api\ApiModels\Error generic error
-	 * @api-response:404 Example\Api\ApiModels\Error item not found
-	 * @api-response:204 Deleted
 	 * @api DELETE /item/{id}
 	 * @internal int $id 
+	 * @api-response:204 Deleted
+	 * @api-response:404 Example\Api\ApiModels\Error item not found
+	 * @api-response:default Example\Api\ApiModels\Error generic error
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args
@@ -79,11 +63,11 @@ class ItemController {
 	/**
 	 * get item by id
 	 * 
-	 * @api-response:default Example\Api\ApiModels\Error generic error
-	 * @api-response:404 Example\Api\ApiModels\Error item not found
-	 * @api-response:200 Example\Api\ApiModels\Item item with specific id
 	 * @api GET /item/{id}
 	 * @internal int $id 
+	 * @api-response:200 Example\Api\ApiModels\Item item with specific id
+	 * @api-response:404 Example\Api\ApiModels\Error item not found
+	 * @api-response:default Example\Api\ApiModels\Error generic error
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args
@@ -101,13 +85,13 @@ class ItemController {
 	/**
 	 * update item
 	 * 
-	 * @api-response:404 Example\Api\ApiModels\Error item not found
-	 * @api-response:default Example\Api\ApiModels\Error generic error
-	 * @api-response:400 Example\Api\ApiModels\Error invalid object
-	 * @api-response:200 Example\Api\ApiModels\Item Ok
 	 * @api PUT /item/{id}
 	 * @internal int $id 
 	 * @internal Item $item
+	 * @api-response:200 Example\Api\ApiModels\Item Ok
+	 * @api-response:400 Example\Api\ApiModels\Error invalid object
+	 * @api-response:404 Example\Api\ApiModels\Error item not found
+	 * @api-response:default Example\Api\ApiModels\Error generic error
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args

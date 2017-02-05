@@ -5,7 +5,6 @@ namespace bc\rest\gen;
 use gossi\codegen\model\PhpClass;
 use gossi\codegen\model\PhpMethod;
 use gossi\codegen\model\PhpParameter;
-use gossi\codegen\model\PhpProperty;
 use gossi\docblock\Docblock;
 use gossi\docblock\tags\ReturnTag;
 use gossi\docblock\tags\TagFactory;
@@ -58,9 +57,10 @@ class ControllerGenerator {
                 $controllers[$name] = new PhpClass($name);
                 $controllers[$name]
                     ->setNamespace($this->namespace.'\\Controllers')
+                    ->setParentClassName("AbstractController")
                     ->setUseStatements(
                         [
-                            'Slim\\Container',
+                            'Rest\\Lib\\AbstractController',
                             'Slim\\Http\\Request',
                             'Slim\\Http\\Response'
                         ])
@@ -68,20 +68,7 @@ class ControllerGenerator {
                         Docblock::create()
                                 ->appendTag(TagFactory::create('package', $controllers[$name]->getNamespace())))
                     ->setDescription('Class '.$name)
-                    ->setLongDescription('Handle '.$path)
-                    ->setProperties(
-                        [
-                            PhpProperty::create('ci')
-                                       ->setType('Container')
-                                       ->setDescription('Dependency injection container')
-                                       ->setVisibility('private')
-                        ])
-                    ->setMethod(
-                        PhpMethod::create('__construct')
-                                 ->addParameter(
-                                     PhpParameter::create('ci')->setType('Container'))
-                                 ->setDescription($controllers[$name]->getName().' constructor')
-                                 ->setBody('$this->ci = $ci;'));
+                    ->setLongDescription('Handle '.$path);
             }
 
             foreach($info as $item) {
@@ -153,8 +140,8 @@ class ControllerGenerator {
                     }
 
                     $method->setDocblock($doc)
-                           ->setDescription($op->getSummary())
                            ->setLongDescription($op->getDescription());
+                    $method->setDescription($op->getSummary());
 
                     $method->addParameter(PhpParameter::create('request')->setType('Request'));
                     $method->addParameter(PhpParameter::create('response')->setType('Response'));

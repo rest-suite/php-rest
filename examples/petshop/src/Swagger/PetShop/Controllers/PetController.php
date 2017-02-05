@@ -2,7 +2,7 @@
 
 namespace Swagger\PetShop\Controllers;
 
-use Slim\Container;
+use Rest\Lib\AbstractController;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\UploadedFile;
@@ -15,30 +15,14 @@ use Swagger\PetShop\ApiModels\Pet;
  * 
  * @package Swagger\PetShop\Controllers
  */
-class PetController {
-
-	/**
-	 * Dependency injection container
-	 * 
-	 * @var Container
-	 */
-	private $ci;
-
-	/**
-	 * PetController constructor
-	 * 
-	 * @param Container $ci
-	 */
-	public function __construct(Container $ci) {
-		$this->ci = $ci;
-	}
+class PetController extends AbstractController {
 
 	/**
 	 * Add a new pet to the store
 	 * 
-	 * @api-response:405 Invalid input
 	 * @internal Pet $pet
 	 * @api POST /pet
+	 * @api-response:405 Invalid input
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args
@@ -56,10 +40,10 @@ class PetController {
 	/**
 	 * Deletes a pet
 	 * 
-	 * @api-response:404 Pet not found
-	 * @api-response:400 Invalid ID supplied
-	 * @internal int $petId Pet id to delete
 	 * @api DELETE /pet/{petId}
+	 * @internal int $petId Pet id to delete
+	 * @api-response:400 Invalid ID supplied
+	 * @api-response:404 Pet not found
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args
@@ -79,10 +63,10 @@ class PetController {
 	 * 
 	 * Multiple status values can be provided with comma separated strings
 	 * 
-	 * @api-response:400 Invalid status value
-	 * @api-response:200 successful operation
-	 * @internal array $status Status values that need to be considered for filter
 	 * @api GET /pet/findByStatus
+	 * @internal array $status Status values that need to be considered for filter
+	 * @api-response:200 successful operation
+	 * @api-response:400 Invalid status value
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args
@@ -102,10 +86,10 @@ class PetController {
 	 * 
 	 * Muliple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.
 	 * 
-	 * @api-response:400 Invalid tag value
-	 * @api-response:200 successful operation
-	 * @internal array $tags Tags to filter by
 	 * @api GET /pet/findByTags
+	 * @internal array $tags Tags to filter by
+	 * @api-response:200 successful operation
+	 * @api-response:400 Invalid tag value
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args
@@ -125,11 +109,11 @@ class PetController {
 	 * 
 	 * Returns a single pet
 	 * 
-	 * @api-response:404 Pet not found
-	 * @api-response:400 Invalid ID supplied
-	 * @api-response:200 Swagger\PetShop\ApiModels\Pet successful operation
 	 * @api GET /pet/{petId}
 	 * @internal int $petId ID of pet to return
+	 * @api-response:200 Swagger\PetShop\ApiModels\Pet successful operation
+	 * @api-response:400 Invalid ID supplied
+	 * @api-response:404 Pet not found
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args
@@ -147,11 +131,11 @@ class PetController {
 	/**
 	 * Update an existing pet
 	 * 
-	 * @api-response:405 Validation exception
-	 * @api-response:404 Pet not found
-	 * @api-response:400 Invalid ID supplied
 	 * @api PUT /pet
 	 * @internal Pet $pet
+	 * @api-response:400 Invalid ID supplied
+	 * @api-response:404 Pet not found
+	 * @api-response:405 Validation exception
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args
@@ -169,11 +153,11 @@ class PetController {
 	/**
 	 * Updates a pet in the store with form data
 	 * 
-	 * @api-response:405 Invalid input
 	 * @internal int $petId ID of pet that needs to be updated
 	 * @internal string $name Updated name of the pet
 	 * @internal string $status Updated status of the pet
 	 * @api POST /pet/{petId}
+	 * @api-response:405 Invalid input
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args
@@ -195,11 +179,11 @@ class PetController {
 	/**
 	 * uploads an image
 	 * 
-	 * @api-response:200 Swagger\PetShop\ApiModels\ApiResponse successful operation
 	 * @internal int $petId ID of pet to update
 	 * @internal string $additionalMetadata Additional data to pass to server
 	 * @internal UploadedFile $file file to upload
 	 * @api POST /pet/{petId}/uploadImage
+	 * @api-response:200 Swagger\PetShop\ApiModels\ApiResponse successful operation
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args
