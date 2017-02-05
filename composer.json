@@ -17,7 +17,8 @@
     "symfony/console": "3.1.*",
     "symfony/yaml": "3.1.*",
     "gossi/swagger": "~0",
-    "gossi/php-code-generator": "~0"
+    "gossi/php-code-generator": "~0",
+    "rest-suite/lib": "~0"
   },
   "require-dev": {
     "codeception/codeception": "2.2.*",

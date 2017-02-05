@@ -2,7 +2,7 @@
 
 namespace Swagger\PetShop\Controllers;
 
-use Slim\Container;
+use Rest\Lib\AbstractController;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Swagger\PetShop\ApiModels\User;
@@ -14,32 +14,16 @@ use Swagger\PetShop\ApiModels\User;
  * 
  * @package Swagger\PetShop\Controllers
  */
-class UserController {
-
-	/**
-	 * Dependency injection container
-	 * 
-	 * @var Container
-	 */
-	private $ci;
-
-	/**
-	 * UserController constructor
-	 * 
-	 * @param Container $ci
-	 */
-	public function __construct(Container $ci) {
-		$this->ci = $ci;
-	}
+class UserController extends AbstractController {
 
 	/**
 	 * Create user
 	 * 
 	 * This can only be done by the logged in user.
 	 * 
-	 * @api-response:default successful operation
 	 * @internal User $user
 	 * @api POST /user
+	 * @api-response:default successful operation
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args
@@ -91,10 +75,10 @@ class UserController {
 	 * 
 	 * This can only be done by the logged in user.
 	 * 
-	 * @api-response:404 User not found
-	 * @api-response:400 Invalid username supplied
-	 * @internal string $username The name that needs to be deleted
 	 * @api DELETE /user/{username}
+	 * @internal string $username The name that needs to be deleted
+	 * @api-response:400 Invalid username supplied
+	 * @api-response:404 User not found
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args
@@ -112,11 +96,11 @@ class UserController {
 	/**
 	 * Get user by user name
 	 * 
-	 * @api-response:404 User not found
-	 * @api-response:400 Invalid username supplied
-	 * @api-response:200 Swagger\PetShop\ApiModels\User successful operation
 	 * @api GET /user/{username}
 	 * @internal string $username The name that needs to be fetched. Use user1 for testing. 
+	 * @api-response:200 Swagger\PetShop\ApiModels\User successful operation
+	 * @api-response:400 Invalid username supplied
+	 * @api-response:404 User not found
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args
@@ -134,11 +118,11 @@ class UserController {
 	/**
 	 * Logs user into the system
 	 * 
-	 * @api-response:400 Invalid username/password supplied
-	 * @api-response:200 successful operation
+	 * @api GET /user/login
 	 * @internal string $username The user name for login
 	 * @internal string $password The password for login in clear text
-	 * @api GET /user/login
+	 * @api-response:200 successful operation
+	 * @api-response:400 Invalid username/password supplied
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args
@@ -176,11 +160,11 @@ class UserController {
 	 * 
 	 * This can only be done by the logged in user.
 	 * 
-	 * @api-response:404 User not found
-	 * @api-response:400 Invalid user supplied
+	 * @api PUT /user/{username}
 	 * @internal string $username name that need to be updated
 	 * @internal User $user
-	 * @api PUT /user/{username}
+	 * @api-response:400 Invalid user supplied
+	 * @api-response:404 User not found
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args

@@ -165,7 +165,7 @@ class Pet {
 	/**
 	 * Set tags property new value
 	 * 
-	 * @param mixed $tags
+	 * @param $tags
 	 */
 	public function setTags($tags) {
 		$this->tags = $tags;

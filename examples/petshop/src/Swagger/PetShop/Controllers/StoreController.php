@@ -2,7 +2,7 @@
 
 namespace Swagger\PetShop\Controllers;
 
-use Slim\Container;
+use Rest\Lib\AbstractController;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Swagger\PetShop\ApiModels\Order;
@@ -14,33 +14,17 @@ use Swagger\PetShop\ApiModels\Order;
  * 
  * @package Swagger\PetShop\Controllers
  */
-class StoreController {
-
-	/**
-	 * Dependency injection container
-	 * 
-	 * @var Container
-	 */
-	private $ci;
-
-	/**
-	 * StoreController constructor
-	 * 
-	 * @param Container $ci
-	 */
-	public function __construct(Container $ci) {
-		$this->ci = $ci;
-	}
+class StoreController extends AbstractController {
 
 	/**
 	 * Delete purchase order by ID
 	 * 
 	 * For valid response try integer IDs with positive integer value. Negative or non-integer values will generate API errors
 	 * 
-	 * @api-response:404 Order not found
-	 * @api-response:400 Invalid ID supplied
-	 * @internal int $orderId ID of the order that needs to be deleted
 	 * @api DELETE /store/order/{orderId}
+	 * @internal int $orderId ID of the order that needs to be deleted
+	 * @api-response:400 Invalid ID supplied
+	 * @api-response:404 Order not found
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args
@@ -78,11 +62,11 @@ class StoreController {
 	 * 
 	 * For valid response try integer IDs with value >= 1 and <= 10. Other values will generated exceptions
 	 * 
-	 * @api-response:404 Order not found
-	 * @api-response:400 Invalid ID supplied
-	 * @api-response:200 Swagger\PetShop\ApiModels\Order successful operation
 	 * @api GET /store/order/{orderId}
 	 * @internal int $orderId ID of pet that needs to be fetched
+	 * @api-response:200 Swagger\PetShop\ApiModels\Order successful operation
+	 * @api-response:400 Invalid ID supplied
+	 * @api-response:404 Order not found
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args
@@ -100,10 +84,10 @@ class StoreController {
 	/**
 	 * Place an order for a pet
 	 * 
-	 * @api-response:400 Invalid Order
-	 * @api-response:200 Swagger\PetShop\ApiModels\Order successful operation
-	 * @internal Order $order
 	 * @api POST /store/order
+	 * @internal Order $order
+	 * @api-response:200 Swagger\PetShop\ApiModels\Order successful operation
+	 * @api-response:400 Invalid Order
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args
