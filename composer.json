@@ -16,7 +16,7 @@
   "require": {
     "symfony/console": "3.1.*",
     "symfony/yaml": "3.1.*",
-    "gossi/swagger": "dev-dev",
+    "gossi/swagger": "~0",
     "gossi/php-code-generator": "~0"
   },
   "require-dev": {
@@ -28,12 +28,6 @@
       "bc\\rest\\" : "./src/bc/rest/"
     }
   },
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://github.com/theinpu/swagger.git"
-    }
-  ],
   "bin": [
     "bin/apigen"
   ]
