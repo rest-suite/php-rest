@@ -134,10 +134,13 @@ class Builder
                 mkdir($configPath, 0755, true);
             }
 
+            $ns = explode('\\', $this->options[self::OPT_NAMESPACE]);
+            $vendor = array_shift($ns);
+
             $configs = $this->classes->getConfigs();
             $fileName = $configPath . DIRECTORY_SEPARATOR
-                . str_replace("/", "-", $this->classes->getConfigName()) . '.php.dist';
-
+                . strtolower($vendor) . '-' . strtolower(implode('-', $ns)) . '.php.dist';
+            
             if (file_exists($fileName) && !$this->options[self::OPT_OVERRIDE]) {
                 $this->output->writeln("<error>File '$fileName' exists</error>");
 
