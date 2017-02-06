@@ -134,12 +134,9 @@ class Builder
                 mkdir($configPath, 0755, true);
             }
 
-            $ns = explode('\\', $this->options[self::OPT_NAMESPACE]);
-            $vendor = array_shift($ns);
-
             $configs = $this->classes->getConfigs();
             $fileName = $configPath . DIRECTORY_SEPARATOR
-                . strtolower($vendor) . '-' . strtolower(implode('-', $ns)) . '.php.dist';
+                . str_replace("/", "-", $this->classes->getConfigName()) . '.php.dist';
 
             if (file_exists($fileName) && !$this->options[self::OPT_OVERRIDE]) {
                 $this->output->writeln("<error>File '$fileName' exists</error>");
@@ -175,7 +172,10 @@ class Builder
             ],
             'require-dev' => [
                 'rest-suite/generator' => '~0',
-                'codeception/codeception' => '>=2.2.4 <2.2.7'
+                'codeception/codeception' => '>=2.2.5 <2.7',
+                'fzaninotto/faker' => '1.6.*',
+                'flow/jsonpath' => '~0.3',
+                'composer/composer' => '1.3.*',
             ],
             'autoload' => [
                 'psr-4' => [
@@ -188,6 +188,9 @@ class Builder
             ]
         ];
         $json = array_merge($origin, $json);
+        $json['require'] = array_merge($origin['require'], $json['require']);
+        $json['require-dev'] = array_merge($origin['require-dev'], $json['require-dev']);
+        $json['autoload'] = array_merge($origin['autoload'], $json['autoload']);
         file_put_contents($path, json_encode($json, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         if ($json != $origin) {
             $this->output->writeln("<info>composer.json " . ($origin == [] ? 'created' : 'updated') . "</info>");

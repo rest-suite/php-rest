@@ -18,7 +18,8 @@
     "symfony/yaml": "3.1.*",
     "gossi/swagger": "~0",
     "gossi/php-code-generator": "~0",
-    "rest-suite/lib": "~0"
+    "rest-suite/lib": "~0",
+    "composer/composer": "1.3.*"
   },
   "require-dev": {
     "codeception/codeception": "2.2.*",
