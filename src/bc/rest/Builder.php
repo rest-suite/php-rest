@@ -193,7 +193,7 @@ class Builder
         $json = array_merge($origin, $json);
         $json['require'] = array_merge($origin['require'], $json['require']);
         $json['require-dev'] = array_merge($origin['require-dev'], $json['require-dev']);
-        $json['autoload'] = array_merge($origin['autoload'], $json['autoload']);
+        $json['autoload']['psr-4'] = array_merge($origin['autoload']['psr-4'], $json['autoload']['psr-4']);
         file_put_contents($path, json_encode($json, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         if ($json != $origin) {
             $this->output->writeln("<info>composer.json " . ($origin == [] ? 'created' : 'updated') . "</info>");
