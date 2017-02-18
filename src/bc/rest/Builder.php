@@ -134,12 +134,8 @@ class Builder
                 mkdir($configPath, 0755, true);
             }
 
-            $ns = explode('\\', $this->options[self::OPT_NAMESPACE]);
-            $vendor = array_shift($ns);
-
             $configs = $this->classes->getConfigs();
-            $fileName = $configPath . DIRECTORY_SEPARATOR
-                . strtolower($vendor) . '-' . strtolower(implode('-', $ns)) . '.php.dist';
+            $fileName = $configPath . DIRECTORY_SEPARATOR.'api.php.dist';
             
             if (file_exists($fileName) && !$this->options[self::OPT_OVERRIDE]) {
                 $this->output->writeln("<error>File '$fileName' exists</error>");
@@ -159,11 +155,6 @@ class Builder
     private function writeComposerJson()
     {
         $path = $this->options[self::OPT_OUTPUT_PATH] . DIRECTORY_SEPARATOR . 'composer.json';
-        if (file_exists($path) && !$this->options[self::OPT_OVERRIDE]) {
-            $this->output->writeln("<error>File '$path' exists</error>");
-
-            return;
-        }
         $origin = file_exists($path) ? json_decode(file_get_contents($path), true) : [];
         $ns = explode('\\', $this->options[self::OPT_NAMESPACE]);
         $vendor = array_shift($ns);
