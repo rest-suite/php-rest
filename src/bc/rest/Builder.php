@@ -135,8 +135,8 @@ class Builder
             }
 
             $configs = $this->classes->getConfigs();
-            $fileName = $configPath . DIRECTORY_SEPARATOR.'api.php.dist';
-            
+            $fileName = $configPath . DIRECTORY_SEPARATOR . 'api.php.dist';
+
             if (file_exists($fileName) && !$this->options[self::OPT_OVERRIDE]) {
                 $this->output->writeln("<error>File '$fileName' exists</error>");
 
@@ -159,7 +159,7 @@ class Builder
         $ns = explode('\\', $this->options[self::OPT_NAMESPACE]);
         $vendor = array_shift($ns);
         $json = [
-            'name' => strtolower($vendor) . '/' . strtolower(implode('-', $ns)),
+            'name' => $this->composeName($vendor, $ns),
             'require' => [
                 'slim/slim' => '3.5.0',
                 'rest-suite/lib' => '~0',
@@ -191,5 +191,19 @@ class Builder
         } else {
             $this->output->writeln("composer.json is up to date");
         }
+    }
+
+    /**
+     * @param $vendor
+     * @param $project
+     *
+     * @return string
+     */
+    private function composeName($vendor, $project)
+    {
+        $vendor = strtolower(preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', $vendor));
+        $project = strtolower(preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', implode('-', $project)));
+
+        return $vendor . '/' . $project;
     }
 }

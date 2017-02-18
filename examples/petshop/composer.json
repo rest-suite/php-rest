@@ -1,5 +1,5 @@
 {
-    "name": "swagger/petshop",
+    "name": "swagger/pet-shop",
     "require": {
         "slim/slim": "3.5.0",
         "rest-suite/lib": "~0"
