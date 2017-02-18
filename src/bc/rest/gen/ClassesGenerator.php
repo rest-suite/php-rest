@@ -160,16 +160,18 @@ class ClassesGenerator
 
 
         }
-        $ns = array_slice(explode('\\', $this->namespace), 0, 2);
-        $vendor = array_shift($ns);
 
         $loadConfigs = [
-            '$this->defaultSettings[\'api\'] = ' . var_export($this->getConfigs(), true) . ';',
             '$result = [];',
-            '$result[\'api\'] = array_merge($result[\'api\'], $this->loadConfig(\'config/' .
-            strtolower($vendor) . '-' . strtolower(implode('-', $ns)) . '.php\'));',
+            '$result[\'api\'] = array_merge($result[\'api\'], $this->loadConfig(\'config/api.php\'));',
             'return $result;'
         ];
+        
+        $bootstrap->setMethod(
+            PhpMethod::create('defaultSettings')
+                ->setBody('return '.var_export($this->getConfigs(), true).';')
+                ->setType("array")
+        );
 
         $bootstrap->setMethod(PhpMethod::create('loadConfigs')->setBody(implode("\n", $loadConfigs)));
 

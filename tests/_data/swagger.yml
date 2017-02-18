@@ -4,7 +4,6 @@ info:
     Example Api
     Multi line description
   title: ExampleApi
-  version: 1.0.0
 consumes:
   - application/json
 produces:

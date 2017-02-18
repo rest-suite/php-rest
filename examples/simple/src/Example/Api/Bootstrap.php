@@ -20,15 +20,17 @@ class Bootstrap extends AbstractBootstrap {
 	 */
 	public static function getInfo() {
 		return array (
-		  'version' => '1.0.0',
 		  'title' => 'ExampleApi',
 		  'description' => 'Example Api Multi line description
 		',
 		);
 	}
 
-	public function loadConfigs() {
-		$this->defaultSettings['api'] = array (
+	/**
+	 * @return array
+	 */
+	public function defaultSettings() {
+		return array (
 		  'Example\\Api\\Controllers\\ItemController' => 
 		  array (
 		    'addItem' => true,
@@ -37,8 +39,11 @@ class Bootstrap extends AbstractBootstrap {
 		    'deleteItem' => true,
 		  ),
 		);
+	}
+
+	public function loadConfigs() {
 		$result = [];
-		$result['api'] = array_merge($result['api'], $this->loadConfig('config/example-api.php'));
+		$result['api'] = array_merge($result['api'], $this->loadConfig('config/api.php'));
 		return $result;
 	}
 

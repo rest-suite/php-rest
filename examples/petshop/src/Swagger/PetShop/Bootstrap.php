@@ -36,8 +36,11 @@ class Bootstrap extends AbstractBootstrap {
 		);
 	}
 
-	public function loadConfigs() {
-		$this->defaultSettings['api'] = array (
+	/**
+	 * @return array
+	 */
+	public function defaultSettings() {
+		return array (
 		  'Swagger\\PetShop\\Controllers\\PetController' => 
 		  array (
 		    'addPet' => true,
@@ -68,8 +71,11 @@ class Bootstrap extends AbstractBootstrap {
 		    'deleteUser' => true,
 		  ),
 		);
+	}
+
+	public function loadConfigs() {
 		$result = [];
-		$result['api'] = array_merge($result['api'], $this->loadConfig('config/swagger-petshop.php'));
+		$result['api'] = array_merge($result['api'], $this->loadConfig('config/api.php'));
 		return $result;
 	}
 
