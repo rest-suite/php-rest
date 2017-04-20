@@ -162,7 +162,7 @@ class ClassesGenerator
         }
 
         $loadConfigs = [
-            '$result = [];',
+            '$result[\'api\'] = [];',
             '$result[\'api\'] = array_merge($result[\'api\'], $this->loadConfig(\'config/api.php\'));',
             'return $result;'
         ];
