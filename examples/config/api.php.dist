@@ -1,0 +1,11 @@
+<?php 
+
+ return array (
+  'Example\\Api\\Controllers\\ItemController' => 
+  array (
+    'addItem' => true,
+    'getItem' => true,
+    'updateItem' => true,
+    'deleteItem' => true,
+  ),
+);

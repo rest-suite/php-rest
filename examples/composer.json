@@ -1,0 +1,8 @@
+{
+    "name": "example/api",
+    "require": null,
+    "require-dev": null,
+    "autoload": {
+        "psr-4": null
+    }
+}
