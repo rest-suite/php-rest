@@ -5,7 +5,6 @@ namespace bc\rest\codeAnalyzer;
 use gossi\swagger\Operation;
 use gossi\swagger\Path;
 use gossi\swagger\Swagger;
-use SebastianBergmann\CodeCoverage\Report\PHP;
 use Symfony\Component\Yaml\Yaml;
 
 class CodeAnalyzer
@@ -88,16 +87,9 @@ class CodeAnalyzer
     private function getMethodBody($string){
 
         $pattern = "/\\{([^\\[\\]]+)\\}\n\n/";
-
         preg_match($pattern, $string, $matches, PREG_OFFSET_CAPTURE);
         $body =  trim($matches[1][0]);
-//        $body =  preg_replace("/        /", "", $body);
-//        $body = preg_replace('# {2,}#', '', $body);
         $body = preg_replace('/[ ]{6,}|[\t]/', '', trim($body));
-
-//        $body = "\t".$body;
-
-//        var_dump($body); die;
 
         return $body ;
     }

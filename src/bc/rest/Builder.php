@@ -21,7 +21,7 @@ class Builder
     const OPT_OUTPUT_PATH = 'outputPath';
     const OPT_SWAGGER = 'swagger';
     const OPT_OVERRIDE = 'override';
-
+    const OPT_SYNC = 'sync';
     /**
      * @var array
      */
@@ -47,17 +47,22 @@ class Builder
      */
     public function __construct(array $options, $output)
     {
-        if (count($options) != 9) throw new \InvalidArgumentException();
+        if (count($options) != 10) throw new \InvalidArgumentException("Number options is not valid");
         $this->options = $options;
         $this->output = $output;
         $this->gen = new CodeGenerator(['generateEmptyDocblock' => false]);
         $this->srcPath = $this->options[self::OPT_OUTPUT_PATH] . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR;
 
-        $analyzer = new CodeAnalyzer($this->srcPath, [
-            'swagger' => $this->options[self::OPT_SWAGGER],
-            'namespace' => $this->options[self::OPT_NAMESPACE]
-        ]);
-        $changedControllers = $analyzer->run();
+        if($this->options['sync'] == true){
+            $analyzer = new CodeAnalyzer($this->srcPath, [
+                'swagger' => $this->options[self::OPT_SWAGGER],
+                'namespace' => $this->options[self::OPT_NAMESPACE]
+            ]);
+
+            $changedControllers = $analyzer->run();
+        } else {
+            $changedControllers = [];
+        }
 
         $this->classes = new ClassesGenerator(
                 $this->options[self::OPT_SWAGGER],
