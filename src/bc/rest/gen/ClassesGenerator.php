@@ -49,8 +49,9 @@ class ClassesGenerator
      *
      * @param string $swaggerFile
      * @param string $namespace
+     * @param array $changedControllers
      */
-    public function __construct($swaggerFile, $namespace)
+    public function __construct($swaggerFile, $namespace, $changedControllers = [])
     {
         $yml = file_get_contents($swaggerFile);
         $swagger = Yaml::parse($yml);
@@ -60,6 +61,21 @@ class ClassesGenerator
         $this->configs = [];
         $this->createPathGroups();
         $this->controllers = new ControllerGenerator($this->swagger, $this->namespace, $this->groups);
+
+
+        if(!empty($changedControllers)){
+            foreach ($changedControllers as $name => $changedController) {
+                if(!empty($changedController)){
+                    foreach ($changedController as $methodName => $body) {
+                        if(!empty($body)){
+                            $this->controllers->get($name)->getMethod($methodName)->setBody($body);
+                        }
+                    }
+                }
+            }
+        }
+
+
         $this->createBootstrap();
     }
 

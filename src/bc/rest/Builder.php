@@ -2,6 +2,7 @@
 
 namespace bc\rest;
 
+use bc\rest\codeAnalyzer\CodeAnalyzer;
 use bc\rest\gen\ClassesGenerator;
 use gossi\codegen\generator\CodeGenerator;
 use gossi\codegen\model\PhpClass;
@@ -50,8 +51,19 @@ class Builder
         $this->options = $options;
         $this->output = $output;
         $this->gen = new CodeGenerator(['generateEmptyDocblock' => false]);
-        $this->classes = new ClassesGenerator($this->options[self::OPT_SWAGGER], $this->options[self::OPT_NAMESPACE]);
         $this->srcPath = $this->options[self::OPT_OUTPUT_PATH] . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR;
+
+        $analyzer = new CodeAnalyzer($this->srcPath, [
+            'swagger' => $this->options[self::OPT_SWAGGER],
+            'namespace' => $this->options[self::OPT_NAMESPACE]
+        ]);
+        $changedControllers = $analyzer->run();
+
+        $this->classes = new ClassesGenerator(
+                $this->options[self::OPT_SWAGGER],
+                $this->options[self::OPT_NAMESPACE],
+                $changedControllers
+        );
     }
 
     public function build()
