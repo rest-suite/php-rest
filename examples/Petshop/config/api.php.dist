@@ -1,0 +1,33 @@
+<?php 
+
+ return array (
+  'Example\\Petshop\\Controllers\\PetController' => 
+  array (
+    'addPet' => true,
+    'updatePet' => true,
+    'findPetsByStatus' => true,
+    'findPetsByTags' => true,
+    'getPetById' => true,
+    'updatePetWithForm' => true,
+    'deletePet' => true,
+    'uploadFile' => true,
+  ),
+  'Example\\Petshop\\Controllers\\StoreController' => 
+  array (
+    'getInventory' => true,
+    'placeOrder' => true,
+    'getOrderById' => true,
+    'deleteOrder' => true,
+  ),
+  'Example\\Petshop\\Controllers\\UserController' => 
+  array (
+    'createUser' => true,
+    'createUsersWithArrayInput' => true,
+    'createUsersWithListInput' => true,
+    'loginUser' => true,
+    'logoutUser' => true,
+    'getUserByName' => true,
+    'updateUser' => true,
+    'deleteUser' => true,
+  ),
+);

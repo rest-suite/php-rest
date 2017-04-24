@@ -2,6 +2,9 @@
 
 namespace bc\rest\codeAnalyzer;
 
+
+use gossi\codegen\model\PhpClass;
+use gossi\codegen\model\PhpMethod;
 use gossi\swagger\Operation;
 use gossi\swagger\Path;
 use gossi\swagger\Swagger;
@@ -9,11 +12,13 @@ use Symfony\Component\Yaml\Yaml;
 
 class CodeAnalyzer
 {
-
+    /** @var string $srcPath  */
     private $srcPath;
 
+    /** @var Swagger $swagger */
     private $swagger;
 
+    /** @var string $namespace */
     private $namespace;
 
 
@@ -37,10 +42,17 @@ class CodeAnalyzer
         $this->namespace    = rtrim($options['namespace'], '\\');
     }
 
+    /**
+     * @return array
+     */
     public function run(){
         return $this->getChangedControllers();
     }
 
+    /**
+     * @param $param
+     * @param $message
+     */
     private function checkParam($param, $message) {
 
         if(!isset($param) || empty($param)) {
@@ -48,6 +60,9 @@ class CodeAnalyzer
         }
     }
 
+    /**
+     * @return array
+     */
     private function getChangedControllers() {
 
         $controllers = [];
@@ -65,45 +80,43 @@ class CodeAnalyzer
         return $controllers;
     }
 
-
+    /**
+     * @param $classPath
+     * @return array
+     */
     private function getChangedMethods($classPath) {
 
         $fullPath       = $this->getAppPath() . trim($classPath, ".");
+        $controller     = PhpClass::fromFile($fullPath);
         $methods        = [];
-        $controller     = shell_exec("cat $fullPath");
-        $controllerArr  = explode('public', $controller);
 
-        unset($controllerArr[0]);
-
-        foreach ($controllerArr as $item) {
-            if($this->isMethodChanged($item)){
-                $methods[$this->getMethodName($item)] = $this->getMethodBody($item) ;
+        foreach ($controller->getMethodNames() as $methodName) {
+            $method = $controller->getMethod($methodName);
+            if($this->isMethodChanged($method)) {
+                $methods[$method->getName()] = $method->getBody();
             }
         }
 
         return $methods;
     }
 
-    private function getMethodBody($string){
-
-        $pattern = "/\\{([^\\[\\]]+)\\}\n\n/";
-        preg_match($pattern, $string, $matches, PREG_OFFSET_CAPTURE);
-        $body =  trim($matches[1][0]);
-        $body = preg_replace('/[ ]{6,}|[\t]/', '', trim($body));
-
-        return $body ;
-    }
-
-
+    /**
+     * @return string
+     */
     private function getAppPath(){
-        return "/home/id/PhpstormProjects/php-lib/generator";
+        return __DIR__ . '/../../../..';
     }
 
-    private function isMethodChanged($item){
 
-       $pattern = '/TODO Method '.$this->getMethodName($item).' not implemented/';
+    /**
+     * @param PhpMethod $method
+     * @return bool
+     */
+    private function isMethodChanged($method){
 
-       if(preg_match($pattern, $item)){
+       $pattern = '/TODO Method ' . $method->getName() . ' not implemented/';
+
+       if(preg_match($pattern, $method->getBody())){
            return false;
        } else {
            return true;
@@ -111,14 +124,9 @@ class CodeAnalyzer
     }
 
 
-    private function getMethodName($str) {
-        $string = explode(" ", $str);
-        $key = array_search("function", $string);
-        $nameArr = explode("(", $string[$key + 1]);
-        return $nameArr[0];
-    }
-
-
+    /**
+     * @return array
+     */
     private function getPathGroups()
     {
         $paths = $this->swagger->getPaths();

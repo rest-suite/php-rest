@@ -33,9 +33,7 @@ class ItemController extends AbstractController {
 		/** @var Item $item */
 		$item = new Item($request->getParsedBody());
 
-		if($item == null) {
-		    echo "item is null";
-		}
+		//TODO Method addItem not implemented
 
 		return $response->withStatus(501, 'ItemController::addItem not implemented');
 	}
