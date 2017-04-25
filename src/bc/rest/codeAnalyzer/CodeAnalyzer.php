@@ -104,7 +104,7 @@ class CodeAnalyzer
      * @return string
      */
     private function getAppPath(){
-        return __DIR__ . '/../../../..';
+        return $_SERVER['PWD'];;
     }
 
 
