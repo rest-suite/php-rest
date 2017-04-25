@@ -38,6 +38,7 @@ Options:
   -t, --tests                 only generate files for tests
   -s, --settings              only generate dist settings files
       --override              override existing files  
+      --sync                  uses with "--override" option, sync client code between re-generations
 ````
 
 ## Synchronization
@@ -47,10 +48,10 @@ TODO: Two-way sync (schema <=> code) with user-code preservation
 Examples of generated code:
 
 * Simple api - [specs](https://github.com/rest-suite/generator/blob/master/tests/_data/swagger.yml),
-[code](https://github.com/rest-suite/generator/tree/master/examples/simple/)  
+[code](https://github.com/rest-suite/generator/tree/master/examples/Simple/)  
 
 * Pet Shop - [specs](https://github.com/rest-suite/generator/blob/master/tests/_data/petshop.yml),
-[code](https://github.com/rest-suite/generator/tree/master/examples/petshop/)
+[code](https://github.com/rest-suite/generator/tree/master/examples/Petshop/)
 
 # Documentation
 TODO
