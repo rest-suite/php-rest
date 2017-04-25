@@ -1,19 +1,19 @@
 <?php
 
-namespace Swagger\PetShop\Controllers;
+namespace Example\Petshop\Controllers;
 
+use Example\Petshop\ApiModels\Pet;
 use Rest\Lib\AbstractController;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\UploadedFile;
-use Swagger\PetShop\ApiModels\Pet;
 
 /**
  * Class PetController
  * 
  * Handle /v2/pet
  * 
- * @package Swagger\PetShop\Controllers
+ * @package Example\Petshop\Controllers
  */
 class PetController extends AbstractController {
 
@@ -111,7 +111,7 @@ class PetController extends AbstractController {
 	 * 
 	 * @api GET /pet/{petId}
 	 * @internal int $petId ID of pet to return
-	 * @api-response:200 Swagger\PetShop\ApiModels\Pet successful operation
+	 * @api-response:200 Example\Petshop\ApiModels\Pet successful operation
 	 * @api-response:400 Invalid ID supplied
 	 * @api-response:404 Pet not found
 	 * @param Request $request
@@ -183,7 +183,7 @@ class PetController extends AbstractController {
 	 * @internal string $additionalMetadata Additional data to pass to server
 	 * @internal UploadedFile $file file to upload
 	 * @api POST /pet/{petId}/uploadImage
-	 * @api-response:200 Swagger\PetShop\ApiModels\ApiResponse successful operation
+	 * @api-response:200 Example\Petshop\ApiModels\ApiResponse successful operation
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $args

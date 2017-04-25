@@ -48,6 +48,9 @@ class ControllerGenerator {
 
     private function createControllers() {
 
+        //TODO: here controller generator must know which method was modified
+        //TODO: and fetch body of modified method for writing to new controller
+
         /** @var PhpClass[] $controllers */
         $controllers = [];
         foreach($this->groups as $group => $info) {
@@ -153,6 +156,7 @@ class ControllerGenerator {
                     $body[] = "return \$response->withStatus(501, ".
                               "'{$controllers[$name]->getName()}::{$method->getName()} not implemented');";
 
+                    //TODO: get old body, if exists set to new body
                     $method->setBody(implode("\n", $body));
 
                     $controllers[$name]->setMethod($method);

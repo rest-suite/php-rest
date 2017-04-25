@@ -1,18 +1,18 @@
 <?php
 
-namespace Swagger\PetShop\Controllers;
+namespace Example\Petshop\Controllers;
 
+use Example\Petshop\ApiModels\User;
 use Rest\Lib\AbstractController;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\PetShop\ApiModels\User;
 
 /**
  * Class UserController
  * 
  * Handle /v2/user
  * 
- * @package Swagger\PetShop\Controllers
+ * @package Example\Petshop\Controllers
  */
 class UserController extends AbstractController {
 
@@ -98,7 +98,7 @@ class UserController extends AbstractController {
 	 * 
 	 * @api GET /user/{username}
 	 * @internal string $username The name that needs to be fetched. Use user1 for testing. 
-	 * @api-response:200 Swagger\PetShop\ApiModels\User successful operation
+	 * @api-response:200 Example\Petshop\ApiModels\User successful operation
 	 * @api-response:400 Invalid username supplied
 	 * @api-response:404 User not found
 	 * @param Request $request

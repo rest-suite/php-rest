@@ -1,18 +1,18 @@
 <?php
 
-namespace Swagger\PetShop\Controllers;
+namespace Example\Petshop\Controllers;
 
+use Example\Petshop\ApiModels\Order;
 use Rest\Lib\AbstractController;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\PetShop\ApiModels\Order;
 
 /**
  * Class StoreController
  * 
  * Handle /v2/store
  * 
- * @package Swagger\PetShop\Controllers
+ * @package Example\Petshop\Controllers
  */
 class StoreController extends AbstractController {
 
@@ -64,7 +64,7 @@ class StoreController extends AbstractController {
 	 * 
 	 * @api GET /store/order/{orderId}
 	 * @internal int $orderId ID of pet that needs to be fetched
-	 * @api-response:200 Swagger\PetShop\ApiModels\Order successful operation
+	 * @api-response:200 Example\Petshop\ApiModels\Order successful operation
 	 * @api-response:400 Invalid ID supplied
 	 * @api-response:404 Order not found
 	 * @param Request $request
@@ -86,7 +86,7 @@ class StoreController extends AbstractController {
 	 * 
 	 * @api POST /store/order
 	 * @internal Order $order
-	 * @api-response:200 Swagger\PetShop\ApiModels\Order successful operation
+	 * @api-response:200 Example\Petshop\ApiModels\Order successful operation
 	 * @api-response:400 Invalid Order
 	 * @param Request $request
 	 * @param Response $response

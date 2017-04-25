@@ -1,11 +1,11 @@
 <?php
 
-namespace Swagger\PetShop\ApiModels;
+namespace Example\Petshop\ApiModels;
 
 /**
  * Class Category
  * 
- * @package Swagger\PetShop\ApiModels
+ * @package Example\Petshop\ApiModels
  */
 class Category {
 

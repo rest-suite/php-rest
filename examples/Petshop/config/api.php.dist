@@ -1,7 +1,7 @@
 <?php 
 
  return array (
-  'Swagger\\PetShop\\Controllers\\PetController' => 
+  'Example\\Petshop\\Controllers\\PetController' => 
   array (
     'addPet' => true,
     'updatePet' => true,
@@ -12,14 +12,14 @@
     'deletePet' => true,
     'uploadFile' => true,
   ),
-  'Swagger\\PetShop\\Controllers\\StoreController' => 
+  'Example\\Petshop\\Controllers\\StoreController' => 
   array (
     'getInventory' => true,
     'placeOrder' => true,
     'getOrderById' => true,
     'deleteOrder' => true,
   ),
-  'Swagger\\PetShop\\Controllers\\UserController' => 
+  'Example\\Petshop\\Controllers\\UserController' => 
   array (
     'createUser' => true,
     'createUsersWithArrayInput' => true,

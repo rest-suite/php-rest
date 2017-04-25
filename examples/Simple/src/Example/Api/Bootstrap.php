@@ -42,7 +42,7 @@ class Bootstrap extends AbstractBootstrap {
 	}
 
 	public function loadConfigs() {
-		$result = [];
+		$result['api'] = [];
 		$result['api'] = array_merge($result['api'], $this->loadConfig('config/api.php'));
 		return $result;
 	}
