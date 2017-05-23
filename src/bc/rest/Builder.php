@@ -75,11 +75,12 @@ class Builder
     {
         $mask = umask(0);
 
+        $this->writeComposerJson();
         $this->writeControllers();
         $this->writeModels();
         $this->writeConfigs();
         $this->writeTests();
-        $this->writeComposerJson();
+
 
         umask($mask);
     }
@@ -90,6 +91,23 @@ class Builder
             if ($this->writeClass($this->classes->getBootstrap())) {
                 $this->output->writeln("<info>Bootstrap created</info>");
             }
+
+            if (!is_null($this->classes->getAuth()) && $this->writeClass($this->classes->getAuth())) {
+
+                if (!empty($this->classes->getAuthAdditionalClasses())) {
+
+
+                    /** @var PhpClass $authAdditionalClass */
+                    foreach ($this->classes->getAuthAdditionalClasses() as $name => $authAdditionalClass) {
+                        if($this->writeClass($authAdditionalClass)) {
+                            $this->output->writeln("<info>Auth additional class ". $name. " created</info>");
+                        }
+                    }
+                }
+
+                $this->output->writeln("<info>Auth created</info>");
+            }
+
 
             foreach ($this->classes->getControllers() as $controller) {
                 if ($this->writeClass($controller)) {
@@ -117,9 +135,11 @@ class Builder
             return false;
         }
 
-        file_put_contents($fileName, "<?php\n\n" . $this->gen->generate($class));
-
-        return true;
+        if(file_put_contents($fileName, "<?php\n\n" . $this->gen->generate($class)) != false){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -198,7 +218,42 @@ class Builder
                 ]
             ]
         ];
+
+        if(!is_null($this->classes->getAuth())){
+
+            if($this->classes->getAuth()->getConstant("isBasicEnabled")){
+                $json['require']['tuupola/slim-basic-auth'] = "=2.2.0";
+            }
+
+            if($this->classes->getAuth()->getConstant("isApiKeyEnabled")){
+                $json['require']['dyorg/slim-token-authentication'] = "=0.3.3";
+            }
+
+            if($this->classes->getAuth()->getConstant("isOauth2Enabled")){
+                //TODO: find and store here slim package for oauth2
+            }
+
+            $this->classes->getAuth()->removeConstant('isBasicEnabled');
+            $this->classes->getAuth()->removeConstant('isApiKeyEnabled');
+            $this->classes->getAuth()->removeConstant('isOauth2Enabled');
+        }
+
+
+
         $json = array_merge($origin, $json);
+
+        if(!isset($origin['require']) || is_null($origin['require'])){
+            $origin['require'] = [];
+        }
+
+        if(!isset($origin['require-dev']) || is_null($origin['require-dev'])){
+            $origin['require-dev'] = [];
+        }
+
+        if(!isset($origin['autoload']['psr-4']) || is_null($origin['autoload']['psr-4'])) {
+            $origin['autoload']['psr-4'] = [];
+        }
+
         $json['require'] = array_merge($origin['require'], $json['require']);
         $json['require-dev'] = array_merge($origin['require-dev'], $json['require-dev']);
         $json['autoload']['psr-4'] = array_merge($origin['autoload']['psr-4'], $json['autoload']['psr-4']);

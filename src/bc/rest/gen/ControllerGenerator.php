@@ -48,9 +48,6 @@ class ControllerGenerator {
 
     private function createControllers() {
 
-        //TODO: here controller generator must know which method was modified
-        //TODO: and fetch body of modified method for writing to new controller
-
         /** @var PhpClass[] $controllers */
         $controllers = [];
         foreach($this->groups as $group => $info) {
