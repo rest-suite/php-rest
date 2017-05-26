@@ -4,11 +4,14 @@ namespace bc\rest\gen;
 
 use gossi\codegen\model\PhpClass;
 use gossi\codegen\model\PhpMethod;
+use gossi\codegen\model\PhpParameter;
+use gossi\codegen\model\PhpProperty;
 use gossi\docblock\Docblock;
 use gossi\docblock\tags\TagFactory;
 use gossi\swagger\Operation;
 use gossi\swagger\Parameter;
 use gossi\swagger\Path;
+use gossi\swagger\SecurityScheme;
 use gossi\swagger\Swagger;
 use Symfony\Component\Yaml\Yaml;
 
@@ -44,6 +47,13 @@ class ClassesGenerator
      */
     private $bootstrap;
 
+    /** @var  PhpClass $auth */
+    private $auth;
+
+    /** @var  array $authAdditionalClasses */
+    private $authAdditionalClasses;
+
+
     /**
      * ClassesGenerator constructor.
      *
@@ -61,7 +71,7 @@ class ClassesGenerator
         $this->configs = [];
         $this->createPathGroups();
         $this->controllers = new ControllerGenerator($this->swagger, $this->namespace, $this->groups);
-
+        $this->auth = null;
 
         if(!empty($changedControllers)){
             foreach ($changedControllers as $name => $changedController) {
@@ -75,8 +85,45 @@ class ClassesGenerator
             }
         }
 
+        $isSecurityGlobalValid = $this->swagger->getSecurity()->valid();
+        $isSecurityInPathValid =  AuthGenerator::isThereSecurityInPaths($this->swagger);
+
+        if($isSecurityGlobalValid || $isSecurityInPathValid) {
+
+            /** @var SecurityScheme $securityDefinition **/
+            foreach ($this->swagger->getSecurityDefinitions() as $securityDefinition) {
+                if(!in_array($securityDefinition->getType(), AuthGenerator::getAuthAvailableTypes())) {
+                    throw new \InvalidArgumentException('Wrong auth type: ' . $securityDefinition->getType() . ", available types: "
+                    . implode(', ',  AuthGenerator::getAuthAvailableTypes()));
+                }
+            };
+
+            $authArr = AuthGenerator::createAuth($this->namespace, $this->swagger);
+            $this->auth = $authArr['Auth'];
+            unset($authArr['Auth']);
+
+            $this->authAdditionalClasses = $authArr;
+
+        }
+
 
         $this->createBootstrap();
+    }
+
+    /**
+     * @return array
+     */
+    public function getAuthAdditionalClasses(): array
+    {
+        return $this->authAdditionalClasses;
+    }
+
+    /**
+     * @return PhpClass|null
+     */
+    public function getAuth()
+    {
+        return $this->auth;
     }
 
     private function createPathGroups()
@@ -117,6 +164,25 @@ class ClassesGenerator
             ->setDescription('Class Bootstrap')
             ->setLongDescription('Creating routes and starting application')
             ->setDocblock(Docblock::create()->appendTag(TagFactory::create('package', $this->namespace)));
+
+
+        if(!is_null($this->auth)){
+
+            $construct = new PhpMethod('__construct');
+
+            $constructBody[] = 'parent::__construct(null);';
+            $constructBody[] = '$auth = new Auth($this->getApp());';
+            $constructBody[] = '$auth->checkAuth();';
+
+            $construct->setBody(implode("\n", $constructBody));
+
+            $bootstrap
+                ->setMethod($construct)
+                ->addUseStatement(
+                    $this->namespace . '\\Auth\\Auth'
+                )
+            ;
+        }
 
         $setRoutes = PhpMethod::create('setUpRoutes')->setDescription('Setup routes. Generated');
 
@@ -179,7 +245,7 @@ class ClassesGenerator
 
         $loadConfigs = [
             '$result[\'api\'] = [];',
-            '$result[\'api\'] = array_merge($result[\'api\'], $this->loadConfig(\'config/api.php\'));',
+            '$result[\'api\'] = array_merge($result[\'api\'], $this->loadConfig(\'/app/config/api.php\'));',
             'return $result;'
         ];
         
