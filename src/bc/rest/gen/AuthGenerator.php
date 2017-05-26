@@ -123,12 +123,11 @@ class AuthGenerator
 
                     $methodBody[] = '    \'authenticator\' => $authenticator,';
 
-
                     if ($securityDefinition->getIn() == "header") {
-                        $methodBody[] = '    \'header\' => \'Token-Authorization-X\',';
+                        $methodBody[] = '    \'header\' => \'' . $securityDefinition->getName() .'\',';
                         $methodBody[] = '    \'regex\' => \'/(.*)$/i\',';
                     } elseif ($securityDefinition->getIn() == "query") {
-                        $methodBody[] = '    \'parameter\' => \'token\',';
+                        $methodBody[] = '    \'parameter\' => \''.$securityDefinition->getName().'\',';
                     }
 
                     $methodBody[] = '    \'error\' => $error,';

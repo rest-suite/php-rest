@@ -145,7 +145,6 @@ paths:
       operationId: getItem
       security:
         - APIKeyQueryParam: []
-          APIKeyHeader: []
       tags:
         - items
       responses:
