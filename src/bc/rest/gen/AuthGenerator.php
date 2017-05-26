@@ -85,7 +85,6 @@ class AuthGenerator
         /** @var SecurityScheme $securityDefinition * */
         foreach ($swagger->getSecurityDefinitions() as $securityDefinition) {
 
-
             switch ($securityDefinition->getType()) {
                 case 'apiKey':
 
@@ -96,7 +95,7 @@ class AuthGenerator
                     if (in_array($securityDefinition->getId(), $security)) {
                         $checkAuthMethods[] = $method->getName();
                     }
-
+                    $methodBody = [];
                     $methodBody[] = "//TODO: implement proper check Api key query";
                     $methodBody[] = '$authenticator = function($request, TokenAuthentication $tokenAuth){';
                     $methodBody[] = '   $token = $tokenAuth->findToken($request);';
@@ -147,16 +146,11 @@ class AuthGenerator
 
                     $method = PhpMethod::create('checkBasicAuth');
 
-                    // TODO: compute paths and excludes
-
                     $checkBasicAuthBody[] = '//TODO: implement proper check login and password';
                     $checkBasicAuthBody[] = '$this->app->add(new HttpBasicAuthentication([';
                     $checkBasicAuthBody[] = '    "users" => [';
                     $checkBasicAuthBody[] = '        "testuser" => "testpassword",';
                     $checkBasicAuthBody[] = '     ],';
-
-
-                    var_dump($securityDefinition->getId());
 
                     $checkBasicAuthBody = array_merge(
                         $checkBasicAuthBody,
@@ -167,8 +161,6 @@ class AuthGenerator
 
                     $checkBasicAuthBody[] = ']));';
                     $checkBasicAuthBody[] = '';
-
-//                    var_dump($checkBasicAuthBody); die;
 
                     $checkBasicAuthBodyStr = implode("\n", $checkBasicAuthBody);
 
@@ -184,8 +176,7 @@ class AuthGenerator
                 case 'oauth2':
                     $method = PhpMethod::create('checkOauth2Auth');
 
-                    $method->setBody('
-                        //TODO: implement proper check oath2 auth');
+                    $method->setBody('//TODO: implement proper check oath2 auth');
 
                     $auth->setMethod($method);
                     $auth->setConstant('isOauth2Enabled', true);
@@ -356,16 +347,8 @@ class AuthGenerator
         foreach ($swagger->getPaths() as $path) {
             foreach ($path->getMethods() as $method) {
                 if (!empty($path->getOperation($method)->getSecurity()->toArray())){
-
                     if (isset($path->getOperation($method)->getSecurity()->toArray()[0])) {
-
-                        var_dump($path->getOperation($method)->getSecurity()->toArray()[0]);
-
-                        echo "security name: " . $securityName . PHP_EOL;
-
                         if (in_array($securityName, array_keys($path->getOperation($method)->getSecurity()->toArray()[0]))) {
-                            echo "MATCH FOUND" . PHP_EOL;
-
                             $ruleArr['path'][preg_replace('/\{\D+/', '*', $path->getPath())][] = $method;
                         }
                     }
@@ -373,10 +356,6 @@ class AuthGenerator
             };
         }
 
-        var_dump($ruleArr);
-
         return $ruleArr;
     }
-
-
 }
