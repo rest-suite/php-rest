@@ -154,10 +154,6 @@ class ClassesGenerator
         }
     }
 
-
-
-
-
     private function createBootstrap()
     {
         $bootstrap = new PhpClass('Bootstrap');
@@ -174,22 +170,19 @@ class ClassesGenerator
 
             $construct = new PhpMethod('__construct');
 
-            $constructBody[] = 'parent::__construct($app);';
+            $constructBody[] = 'parent::__construct(null);';
             $constructBody[] = '$auth = new Auth($this->getApp());';
             $constructBody[] = '$auth->checkAuth();';
 
             $construct->setBody(implode("\n", $constructBody));
-            $construct->setParameters([
-                (new PhpParameter("app"))->setType('App')
-            ]);
-
 
             $bootstrap
                 ->setMethod($construct)
-                ->addUseStatement('Slim\App')
+                ->addUseStatement(
+                    $this->namespace . '\\Auth\\Auth'
+                )
             ;
         }
-
 
         $setRoutes = PhpMethod::create('setUpRoutes')->setDescription('Setup routes. Generated');
 

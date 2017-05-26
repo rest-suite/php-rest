@@ -13,6 +13,7 @@ use gossi\swagger\Path;
 use gossi\swagger\SecurityScheme;
 use gossi\swagger\Swagger;
 
+
 class AuthGenerator
 {
     const TYPE_BASIC = 'basic';
@@ -33,52 +34,19 @@ class AuthGenerator
      * @param Swagger $swagger
      * @return bool
      */
-    public static function isThereSecurityInPaths(Swagger $swagger) {
+    public static function isThereSecurityInPaths(Swagger $swagger)
+    {
 
         /** @var Path $path */
         foreach ($swagger->getPaths() as $path) {
             foreach ($path->getMethods() as $method) {
-                if($path->getOperation($method)->getSecurity()->valid()) {
+                if ($path->getOperation($method)->getSecurity()->valid()) {
                     return true;
                 };
             };
         }
         return false;
     }
-
-    /**
-     * @param Swagger $swagger
-     * @return array
-     */
-    private static function getSecuritiesFromPaths(Swagger $swagger) {
-        $securities = [];
-
-        /** @var Path $path */
-        foreach ($swagger->getPaths() as $path) {
-            foreach ($path->getMethods() as $method) {
-                if($path->getOperation($method)->getSecurity()->valid()) {
-                    foreach ($path->getOperation($method)->getSecurity()->toArray() as $securityName => $content) {
-                        $securities = array_merge($securities, array_keys($content));
-                    };
-                };
-            };
-        }
-
-        return $securities;
-    }
-
-    /**
-     * @param Swagger $swagger
-     * @return array
-     */
-    private static function getApiKeyPathsData(Swagger $swagger) {
-
-        //TODO: implement path-specific security - analyze paths and security options in it and so on and so on
-
-
-        return ['    \'path\' => \'/item/*\','];
-    }
-
 
     public static function createAuth($namespace, Swagger $swagger)
     {
@@ -88,8 +56,7 @@ class AuthGenerator
             ->setDescription('Auth class')
             ->setLongDescription('Authorize users')
             ->setDocblock(Docblock::create()->appendTag(TagFactory::create('package', $namespace)))
-            ->addUseStatement('Slim\App')
-        ;
+            ->addUseStatement('Slim\App');
 
         $construct = PhpMethod::create("__construct");
         $construct->setParameters([
@@ -115,7 +82,7 @@ class AuthGenerator
         $createRequestPathMethodRule = null;
 
 
-        /** @var SecurityScheme $securityDefinition **/
+        /** @var SecurityScheme $securityDefinition * */
         foreach ($swagger->getSecurityDefinitions() as $securityDefinition) {
 
 
@@ -126,7 +93,7 @@ class AuthGenerator
 
                     $method = PhpMethod::create("checkApiKey" . ucfirst($securityDefinition->getIn()));
 
-                    if(in_array($securityDefinition->getId(), $security)){
+                    if (in_array($securityDefinition->getId(), $security)) {
                         $checkAuthMethods[] = $method->getName();
                     }
 
@@ -153,12 +120,12 @@ class AuthGenerator
                     $methodBody[] = '$this->app->add(new TokenAuthentication([';
 
                     // TODO: compute paths and excludes
-                    $methodBody = array_merge($methodBody, self::getApiKeyPathsData($swagger));
+                    $methodBody[] = self::getApiKeyPathsData($swagger, $securityDefinition->getId());
 
                     $methodBody[] = '    \'authenticator\' => $authenticator,';
-                    
 
-                    if($securityDefinition->getIn() == "header") {
+
+                    if ($securityDefinition->getIn() == "header") {
                         $methodBody[] = '    \'header\' => \'Token-Authorization-X\',';
                         $methodBody[] = '    \'regex\' => \'/(.*)$/i\',';
                     } elseif ($securityDefinition->getIn() == "query") {
@@ -181,16 +148,34 @@ class AuthGenerator
                     $method = PhpMethod::create('checkBasicAuth');
 
                     // TODO: compute paths and excludes
-                    $method->setBody('
-                        //TODO: implement proper check login and password
-$this->app->add(new HttpBasicAuthentication([
-    "users" => [
-        "testuser" => "testpassword",
-    ]
-]));');
+
+                    $checkBasicAuthBody[] = '//TODO: implement proper check login and password';
+                    $checkBasicAuthBody[] = '$this->app->add(new HttpBasicAuthentication([';
+                    $checkBasicAuthBody[] = '    "users" => [';
+                    $checkBasicAuthBody[] = '        "testuser" => "testpassword",';
+                    $checkBasicAuthBody[] = '     ],';
+
+
+                    var_dump($securityDefinition->getId());
+
+                    $checkBasicAuthBody = array_merge(
+                        $checkBasicAuthBody,
+                            self::getBasicAuthPathsData(
+                                $swagger, $securityDefinition->getId()
+                            )
+                    );
+
+                    $checkBasicAuthBody[] = ']));';
+                    $checkBasicAuthBody[] = '';
+
+//                    var_dump($checkBasicAuthBody); die;
+
+                    $checkBasicAuthBodyStr = implode("\n", $checkBasicAuthBody);
+
+                    $method->setBody($checkBasicAuthBodyStr);
                     $auth->setMethod($method);
                     $auth->setConstant('isBasicEnabled', true);
-                    if(in_array($securityDefinition->getId(), $security)){
+                    if (in_array($securityDefinition->getId(), $security)) {
                         $checkAuthMethods[] = $method->getName();
                     }
 
@@ -204,7 +189,7 @@ $this->app->add(new HttpBasicAuthentication([
 
                     $auth->setMethod($method);
                     $auth->setConstant('isOauth2Enabled', true);
-                    if(in_array($securityDefinition->getId(), $security)){
+                    if (in_array($securityDefinition->getId(), $security)) {
                         $checkAuthMethods[] = $method->getName();
                     }
 
@@ -228,12 +213,60 @@ $this->app->add(new HttpBasicAuthentication([
 
         $authClassesArr['Auth'] = $auth;
 
-        if(!is_null($createRequestPathMethodRule)) {
+        if (!is_null($createRequestPathMethodRule)) {
             $authClassesArr['RequestPathMethodRule'] = $createRequestPathMethodRule;
         }
         return $authClassesArr;
     }
 
+    /**
+     * @param Swagger $swagger
+     * @return array
+     */
+    private static function getSecuritiesFromPaths(Swagger $swagger)
+    {
+        $securities = [];
+
+        /** @var Path $path */
+        foreach ($swagger->getPaths() as $path) {
+            foreach ($path->getMethods() as $method) {
+                if ($path->getOperation($method)->getSecurity()->valid()) {
+                    foreach ($path->getOperation($method)->getSecurity()->toArray() as $securityName => $content) {
+                        $securities = array_merge($securities, array_keys($content));
+                    };
+                };
+            };
+        }
+
+        return $securities;
+    }
+
+    /**
+     * @param Swagger $swagger
+     * @return array
+     */
+    private static function getApiKeyPathsData(Swagger $swagger, $securityName)
+    {
+
+        $data = var_export(self::calculateAuthPathsAndMethods($swagger, $securityName), true);
+
+        preg_match('/\((([^()]*|(?R))*)\)/', $data, $matches);
+
+        return trim($matches[1], "\n ");
+
+    }
+
+    private static function getBasicAuthPathsData(Swagger $swagger, $securityName)
+    {
+        $pathData[] = "    'rules' => [";
+        $pathData[] = "new RequestPathMethodRule(";
+
+        $pathData[] = var_export(self::calculateAuthPathsAndMethods($swagger, $securityName), true);
+
+        $pathData[] = ")]";
+
+        return $pathData;
+    }
 
     private static function createRequestPathMethodRule($namespace)
     {
@@ -245,8 +278,7 @@ $this->app->add(new HttpBasicAuthentication([
             ->setLongDescription('Rule to decide by request path and method whether the request should be authenticated or not.')
             ->setDocblock(Docblock::create()->appendTag(TagFactory::create('package', $namespace . "\\Auth")))
             ->addUseStatement('Psr\Http\Message\RequestInterface')
-            ->setProperty((new PhpProperty('options'))->setVisibility('protected')->setDescription('Stores all the options passed to the rule'))
-        ;
+            ->setProperty((new PhpProperty('options'))->setVisibility('protected')->setDescription('Stores all the options passed to the rule'));
 
         $rule->setMethod((new PhpMethod('getDefaultOptions'))->setBody('return ["path" => ["/"], "passthrough"=> []];'));
 
@@ -255,19 +287,96 @@ $this->app->add(new HttpBasicAuthentication([
             (new PhpMethod('__construct'))
                 ->setParameters([
                     (new PhpParameter('options'))
-                    ->setExpression('[]')
-                    ->setType('array')
+                        ->setExpression('[]')
+                        ->setType('array')
                 ])
                 ->setBody('$this->options = array_merge($this->getDefaultOptions(), $options);')
                 ->setDescription('Create new rule instance')
 
         );
 
-        $rule->setMethod()
+        $invokeMethod[] = '$uri = "/" . $request->getUri()->getPath();';
+        $invokeMethod[] = '$uri = preg_replace("#/+#", "/", $uri);';
+        $invokeMethod[] = '';
+        $invokeMethod[] = '/** If request path is matches passthrough should not authenticate. */';
+        $invokeMethod[] = 'foreach ((array)$this->options["passthrough"] as $passthrough => $method) {';
+        $invokeMethod[] = '    $passthrough = rtrim($passthrough, "/");';
+        $invokeMethod[] = '';
+        $invokeMethod[] = '    if ($passthrough === \'0\') {';
+        $invokeMethod[] = '        $passthrough    = $method;';
+        $invokeMethod[] = '        $method         = null;';
+        $invokeMethod[] = '    }';
+        $invokeMethod[] = '';
+        $invokeMethod[] = '    if (preg_match("@^{$passthrough}(/.*)?$@", $uri)) {';
+        $invokeMethod[] = '        if ((in_array(strtolower($request->getMethod()), (array)$method)) || empty((array)$method)) {';
+        $invokeMethod[] = '            return false;';
+        $invokeMethod[] = '        }';
+        $invokeMethod[] = '    }';
+        $invokeMethod[] = '}';
+        $invokeMethod[] = '';
+        $invokeMethod[] = '/** Otherwise check if path matches and we should authenticate. */';
+        $invokeMethod[] = 'foreach ((array)$this->options["path"] as $path => $method) {';
+        $invokeMethod[] = '    $path = rtrim($path, "/");';
+        $invokeMethod[] = '';
+        $invokeMethod[] = '    if ($path === \'0\') {';
+        $invokeMethod[] = '        $path   = $method;';
+        $invokeMethod[] = '        $method = null;';
+        $invokeMethod[] = '    }';
+        $invokeMethod[] = '    if (preg_match("@^{$path}(/.*)?$@", $uri)) {';
+        $invokeMethod[] = '        if ((in_array(strtolower($request->getMethod()), (array)$method)) || empty((array)$method)) {';
+        $invokeMethod[] = '            return true;';
+        $invokeMethod[] = '        }';
+        $invokeMethod[] = '    }';
+        $invokeMethod[] = '}';
+        $invokeMethod[] = '';
+        $invokeMethod[] = 'return false;';
+
+
+        $rule->setMethod(
+            (new PhpMethod('__invoke'))
+                ->setParameters([
+                    (new PhpParameter('request'))
+                        ->setType('RequestInterface')
+
+                ])
+                ->setBody(implode("\n", $invokeMethod))
+                ->setDocblock('@return bool')
+        );
 
         return $rule;
     }
 
+    private static function calculateAuthPathsAndMethods(Swagger $swagger, $securityName)
+    {
+        //TODO: implement passthrough
+
+        $ruleArr = [];
+
+        /** @var Path $path */
+        foreach ($swagger->getPaths() as $path) {
+            foreach ($path->getMethods() as $method) {
+                if (!empty($path->getOperation($method)->getSecurity()->toArray())){
+
+                    if (isset($path->getOperation($method)->getSecurity()->toArray()[0])) {
+
+                        var_dump($path->getOperation($method)->getSecurity()->toArray()[0]);
+
+                        echo "security name: " . $securityName . PHP_EOL;
+
+                        if (in_array($securityName, array_keys($path->getOperation($method)->getSecurity()->toArray()[0]))) {
+                            echo "MATCH FOUND" . PHP_EOL;
+
+                            $ruleArr['path'][preg_replace('/\{\D+/', '*', $path->getPath())][] = $method;
+                        }
+                    }
+                }
+            };
+        }
+
+        var_dump($ruleArr);
+
+        return $ruleArr;
+    }
 
 
 }

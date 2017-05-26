@@ -113,7 +113,7 @@ paths:
     get:
       summary: get item by id
       security:
-        - APIKeyHeader: []
+        - basicAuth: []
 
       operationId: getDetailItem
       tags:
@@ -143,6 +143,9 @@ paths:
     get:
       summary: get item by id
       operationId: getItem
+      security:
+        - APIKeyQueryParam: []
+          APIKeyHeader: []
       tags:
         - items
       responses:
